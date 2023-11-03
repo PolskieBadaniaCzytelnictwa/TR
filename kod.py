@@ -39,7 +39,7 @@ while selected_miesiace[1] - selected_miesiace[0] < 2:
 
 selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
 
-estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg'], horizontal=True, index = 0)
+estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (w %)'], horizontal=True, index = 0)
 www_option = st.radio("Określ zakres danych www:", ['www', 'www PC oraz www Mobile'], horizontal=True, index =0 )
 
 show_wspolczytelnictwo = st.checkbox("Pokaż współczytelnictwo", value=False)
@@ -58,14 +58,14 @@ for i in selected_tematyki:
 wyniki = wyniki.fillna(0)
 wyniki = wyniki.sort_values('Total Reach 360°', ascending=False)
 
-if estymacja == 'Zasięg':
+if estymacja == 'Zasięg (w %)':
     wyniki = wyniki / 29545225 * 100
     wyniki = wyniki.round(2)
 
 if show_wspolczytelnictwo:
     wyniki['Współczytelnictwo'] = wyniki['druk+e-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
 
-wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}'.format(x) if estymacja == 'Zasięg' else '{:,.0f}'.format(x).replace(',', ' '))
+wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}'.format(x) if estymacja == 'Zasięg (w %)' else '{:,.0f}'.format(x).replace(',', ' '))
 
 if www_option == 'www':
     del wyniki_sformatowane['www PC']
@@ -101,7 +101,7 @@ for pismo in wyniki.index.unique():
 st.markdown("""<div style="font-size:10px">Statystyki:</div>""", unsafe_allow_html=True)
 
 if estymacja == 'Zasieg':
-    st.markdown("""<div style="font-size:10px; margin-left: 2px">Zasięg</div>""", unsafe_allow_html=True)
+    st.markdown("""<div style="font-size:10px; margin-left: 2px">Zasięg (w %)</div>""", unsafe_allow_html=True)
 else:
     st.markdown("""<div style="font-size:10px; margin-left: 2px">Estymacja na populację</div>""", unsafe_allow_html=True)
 
