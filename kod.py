@@ -1,10 +1,18 @@
 import streamlit as st
 
+primary_color = "#00AADB"
+
+
 st.set_page_config(
     page_title="Total Reach 360°",
     page_icon=":bar_chart:",
     layout="wide",
 )
+
+
+st.markdown(f"""<style> .reportview-container {{ background-color: {primary_color}; }} </style>""", unsafe_allow_html=True)
+
+
 
 import pandas as pd
 
@@ -65,7 +73,8 @@ if estymacja == 'Zasięg (w %)':
 if show_wspolczytelnictwo:
     wyniki['Współczytelnictwo'] = wyniki['druk+e-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
 
-wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}'.format(x) if estymacja == 'Zasięg (w %)' else '{:,.0f}'.format(x).replace(',', ' '))
+wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if estymacja == 'Zasięg (w %)' else '{:,.0f}'.format(x).replace(',', ' '))
+
 
 if www_option == 'www':
     del wyniki_sformatowane['www PC']
