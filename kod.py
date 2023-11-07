@@ -32,12 +32,12 @@ st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360�
 
 selected_kwartaly = st.multiselect(
     "Wybierz kwartały:",
-    ["I kwartał", "II kwartał", "III kwartał"],
-    default=["I kwartał", "II kwartał", "III kwartał"]
+    ["I kwartał 2023", "II kwartał 2023", "III kwartał 2023"],
+    default=["I kwartał 2023", "II kwartał 2023", "III kwartał 2023"]
 )
 
 # Mapowanie wybranych kwartałów na odpowiadające im miesiące
-miesiace_mapping = {"I kwartał": [1, 2, 3], "II kwartał": [4, 5, 6], "III kwartał": [7, 8, 9]}
+miesiace_mapping = {"I kwartał 2023": [1, 2, 3], "II kwartał 2023": [4, 5, 6], "III kwartał 2023": [7, 8, 9]}
 selected_miesiace = [item for kwartal in selected_kwartaly for item in miesiace_mapping[kwartal]]
 
 selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
