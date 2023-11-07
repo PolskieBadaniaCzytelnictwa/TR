@@ -26,23 +26,19 @@ miesiące_lista = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 strony = pd.read_excel('strony.xlsx')
 tematyka_legenda_dict = dict(zip(strony['Pismo'], strony['Strona']))
+wydawca_legenda_dict = dict(zip(tematyka['tytuł'], tematyka['wydawca']))
 
 st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360°</h1>", unsafe_allow_html=True)
 
-selected_miesiace = st.slider("Wybierz okres czasu (miesiące 2023):", min_value=1, max_value=9, value=(1, 9), step=1)
+selected_kwartaly = st.multiselect(
+    "Wybierz kwartały (miesiące 2023):",
+    ["I kwartał", "II kwartał", "III kwartał"],
+    default=["I kwartał", "II kwartał", "III kwartał"]
+)
 
-# Sprawdź, czy zakres obejmuje co najmniej trzy miesiące
-while selected_miesiace[1] - selected_miesiace[0] < 2:
-    st.warning("Wybierz zakres obejmujący co najmniej trzy miesiące.")
-    selected_miesiace = st.slider(
-        "Wybierz okres czasu (miesiące 2023):", 
-        min_value=1, 
-        max_value=9, 
-        value=(1, 9), 
-        step=1, 
-        key=f"miesiace-slider-{selected_miesiace[0]}-{selected_miesiace[1]}"
-    )
-
+# Mapowanie wybranych kwartałów na odpowiadające im miesiące
+miesiace_mapping = {"I kwartał": [1, 2, 3], "II kwartał": [4, 5, 6], "III kwartał": [7, 8, 9]}
+selected_miesiace = [item for kwartal in selected_kwartaly for item in miesiace_mapping[kwartal]]
 
 selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
 
@@ -71,11 +67,13 @@ if estymacja == 'Zasięg (%)':
 if show_wspolczytelnictwo:
     wyniki['Współczytelnictwo'] = wyniki['Druk+e-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
 
-
 wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if not pd.isna(x) and estymacja == 'Zasięg (%)' else '{:,.0f}'.format(x).replace(',', ' ') if not pd.isna(x) else x)
 wyniki_sformatowane = wyniki_sformatowane.astype('object').fillna('-')
 wyniki_sformatowane = wyniki_sformatowane.reset_index()
 wyniki_sformatowane.columns = ['Marka prasowa'] + list(wyniki_sformatowane.columns[1:])
+wyniki_sformatowane['Wydawca'] = wyniki_sformatowane['Marka prasowa'].map(wydawca_legenda_dict)
+new_column_order = ['Marka prasowa', 'Wydawca'] + list(wyniki_sformatowane.columns[1:-1])
+wyniki_sformatowane = wyniki_sformatowane[new_column_order]
 wyniki_sformatowane.index+=1
 
 if www_option == 'www':
