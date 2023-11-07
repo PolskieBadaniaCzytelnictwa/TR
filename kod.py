@@ -31,7 +31,7 @@ wydawca_legenda_dict = dict(zip(tematyka['tytuł'], tematyka['wydawca']))
 st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360°</h1>", unsafe_allow_html=True)
 
 selected_kwartaly = st.multiselect(
-    "Wybierz kwartały (miesiące 2023):",
+    "Wybierz kwartały:",
     ["I kwartał", "II kwartał", "III kwartał"],
     default=["I kwartał", "II kwartał", "III kwartał"]
 )
