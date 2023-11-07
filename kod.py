@@ -9,7 +9,6 @@ st.set_page_config(
     layout="wide",
 )
 
-
 st.markdown(f"""<style> .reportview-container {{ background-color: {primary_color}; }} </style>""", unsafe_allow_html=True)
 
 
@@ -22,7 +21,7 @@ df = pd.read_excel('TBR_9m.xlsx')
 tematyka = pd.read_excel('kat.xlsx')
 
 tematyka_lista = tematyka['kat'].unique()
-wskaźniki_lista = ['druk+e-wydania', 'www PC', 'www Mobile', 'www', 'Total Reach 360°']
+wskaźniki_lista = ['Druk+e-wydania', 'www PC', 'www Mobile', 'www', 'Total Reach 360°']
 miesiące_lista = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 strony = pd.read_excel('strony.xlsx')
@@ -47,8 +46,8 @@ while selected_miesiace[1] - selected_miesiace[0] < 2:
 
 selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
 
-estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (w %)'], horizontal=True, index = 0)
-www_option = st.radio("Określ zakres danych www:", ['www', 'www PC oraz www Mobile'], horizontal=True, index =0 )
+estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
+www_option = st.radio("Określ zakres danych www:", ['www PC oraz www Mobile', 'www'], horizontal=True, index =0 )
 
 show_wspolczytelnictwo = st.checkbox("Pokaż współczytelnictwo", value=False)
 
@@ -61,20 +60,20 @@ for i in selected_tematyki:
             if k != 'Total Reach 360°':
                 wyniki.loc[j, k] = df[(df['tytuł'] == j) & (df['wskaźnik'] == k) & (df['miesiąc'].between(selected_miesiace[0], selected_miesiace[1]))]['wynik'].mean()
             else:
-                wyniki.loc[j, k] = max(wyniki.loc[j, 'druk+e-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['wskaźnik'] == 'współczytelnictwo')]['wynik'])) * wyniki.loc[j, 'druk+e-wydania'] + wyniki.loc[j, 'www'])
+                wyniki.loc[j, k] = max(wyniki.loc[j, 'Druk+e-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['wskaźnik'] == 'współczytelnictwo')]['wynik'])) * wyniki.loc[j, 'Druk+e-wydania'] + wyniki.loc[j, 'www'])
 
-wyniki = wyniki.fillna(0)
 wyniki = wyniki.sort_values('Total Reach 360°', ascending=False)
 
-if estymacja == 'Zasięg (w %)':
+if estymacja == 'Zasięg (%)':
     wyniki = wyniki / 29545225 * 100
     wyniki = wyniki.round(2)
 
 if show_wspolczytelnictwo:
-    wyniki['Współczytelnictwo'] = wyniki['druk+e-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
+    wyniki['Współczytelnictwo'] = wyniki['Druk+e-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
 
-wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if estymacja == 'Zasięg (w %)' else '{:,.0f}'.format(x).replace(',', ' '))
 
+wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if not pd.isna(x) and estymacja == 'Zasięg (%)' else '{:,.0f}'.format(x).replace(',', ' ') if not pd.isna(x) else x)
+wyniki_sformatowane = wyniki_sformatowane.astype('object').fillna('-')
 
 if www_option == 'www':
     del wyniki_sformatowane['www PC']
@@ -100,27 +99,31 @@ st.markdown(html_table, unsafe_allow_html=True)
 
 
 
-tekst = 'Strony odpowiadające poszczególnym pismom:'
+tekst = 'Badane marki:'
 for pismo in wyniki.index.unique():
     try:
         tekst = f'{tekst} {pismo} : {tematyka_legenda_dict[pismo]},'
     except:
         pass
 
-st.markdown("""<div style="font-size:10px">Statystyki:</div>""", unsafe_allow_html=True)
+st.markdown("""<div style="font-size:12px">Statystyki: Zasięg CCS i estymacja na populację, populacja 29 545 225</div>""", unsafe_allow_html=True)
 
 if estymacja == 'Zasieg':
-    st.markdown("""<div style="font-size:10px; margin-left: 2px">Zasięg (w %)</div>""", unsafe_allow_html=True)
+    st.markdown("""<div style="font-size:12px; margin-left: 2px">Zasięg (w %)</div>""", unsafe_allow_html=True)
 else:
-    st.markdown("""<div style="font-size:10px; margin-left: 2px">Estymacja na populację</div>""", unsafe_allow_html=True)
+    st.markdown("""<div style="font-size:12px; margin-left: 2px">Estymacja na populację</div>""", unsafe_allow_html=True)
 
-st.markdown("""<div style="font-size:10px">Fale:</div>""", unsafe_allow_html=True)
-st.markdown("""<div style="font-size:10px; margin-left: 2px">Dane czytelnicze:</div>""", unsafe_allow_html=True)
-st.markdown(f"""<div style="font-size:10px; margin-left: 5px">{selected_miesiace[0]}-{selected_miesiace[1]}/2023:</div>""", unsafe_allow_html=True)
-st.markdown("""<div style="font-size:10px; margin-left: 2px">Dane www:</div>""", unsafe_allow_html=True)
-st.markdown(f"""<div style="font-size:10px; margin-left: 5px">{selected_miesiace[0]}-{selected_miesiace[1]}/2023:</div>""", unsafe_allow_html=True)
-st.markdown(f"""<div style="font-size:10px">{tekst}</div>""", unsafe_allow_html=True)
+st.markdown("""<div style="font-size:12px">Fale:</div>""", unsafe_allow_html=True)
+st.markdown(f"""<div style="font-size:12px; margin-left: 2px">{selected_miesiace[0]}-{selected_miesiace[1]}/2023:</div>""", unsafe_allow_html=True)
+
+
+st.markdown("""<div style="font-size:12px">Dane CCS: Druk+e-wydania –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius/</div>""", unsafe_allow_html=True)
+            
+st.markdown(f"""<div style="font-size:12px">{tekst}</div>""", unsafe_allow_html=True)
 
 przyp = "PRZYPOMINAMY UŻYTKOWNIKOM, ŻE ZGODNIE Z ZALECENIAMI PBC NIE NALEŻY POSŁUGIWAĆ SIĘ WYNIKAMI TEGO BADANIA BEZ ZACHOWANIA REGUŁ WNIOSKOWANIA STATYSTYCZNEGO. SZCZEGÓLNIE POWAŻNY BŁĄD MOŻE ZOSTAĆ POPEŁNIONY W PRZYPADKU, KIEDY NIEISTOTNA STATYSTYCZNIE RÓŻNICA MIĘDZY DWOMA WSKAŹNIKAMI CZYTELNICTWA JEST INTERPRETOWANA JAKO RÓŻNICA W POZIOMIE CZYTELNICTWA MIMO, IŻ MIEŚCI SIĘ ONA W GRANICACH BŁĘDU NA POZIOMIE UFNOŚCI 95%."
 
-st.markdown(f"""<div style="font-size:10px; margin-top: 2px">{przyp}</div>""", unsafe_allow_html=True)
+
+st.markdown(f"""<div style="font-size:12px; margin-top: 2px; margin-bottom: 0px">{przyp}</div>""", unsafe_allow_html=True)
+
+st.markdown("""<div style="font-size:12px">Definicje: www.pbc.pl/wskazniki/</div>""", unsafe_allow_html=True)
