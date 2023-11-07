@@ -74,22 +74,31 @@ if show_wspolczytelnictwo:
 
 wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if not pd.isna(x) and estymacja == 'Zasięg (%)' else '{:,.0f}'.format(x).replace(',', ' ') if not pd.isna(x) else x)
 wyniki_sformatowane = wyniki_sformatowane.astype('object').fillna('-')
+wyniki_sformatowane = wyniki_sformatowane.reset_index()
+wyniki_sformatowane.columns = ['Marka prasowa'] + list(wyniki_sformatowane.columns[1:])
+wyniki_sformatowane.index+=1
 
 if www_option == 'www':
     del wyniki_sformatowane['www PC']
     del wyniki_sformatowane['www Mobile']
 else:
     del wyniki_sformatowane['www']
+ 
 
-# Ustaw szerokość kolumn
 wyniki_sformatowane_styled = wyniki_sformatowane.style.set_table_styles([
     {'selector': 'table', 'props': [('text-align', 'center')]},
     {'selector': 'th', 'props': [('text-align', 'center')]},
-    {'selector': 'td', 'props': [('text-align', 'center')]}
-])
+    {'selector': 'td', 'props': [('text-align', 'center')]},
+    {'selector': 'th.col0, td.col0', 'props': [('text-align', 'left')]}  # Wyrównaj pierwszą kolumnę do lewej
+]).set_properties(
+    subset=['Total Reach 360°'], 
+    **{'font-weight': 'bold'}
+)
+
 
 # Przekształć stylizowaną ramkę danych do formatu HTML
 html_table = wyniki_sformatowane_styled.to_html()
+
 
 # Dodaj styl CSS, aby umieścić tabelę na środku
 html_table = f"<div style='margin: auto;'>{html_table}</div>"
