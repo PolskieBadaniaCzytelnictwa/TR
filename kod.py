@@ -121,7 +121,9 @@ else:
     st.markdown("""<div style="font-size:12px; margin-left: 2px">Estymacja na populację</div>""", unsafe_allow_html=True)
 
 st.markdown("""<div style="font-size:12px">Fale:</div>""", unsafe_allow_html=True)
-st.markdown(f"""<div style="font-size:12px; margin-left: 2px">{selected_miesiace[0]}-{selected_miesiace[1]}/2023:</div>""", unsafe_allow_html=True)
+
+
+st.markdown(f"""<div style="font-size:12px; margin-left: 2px">{min(selected_miesiace)}-{max(selected_miesiace)}/2023:</div>""", unsafe_allow_html=True)
 
 
 st.markdown("""<div style="font-size:12px">Dane CCS: Druk+e-wydania –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius/</div>""", unsafe_allow_html=True)
