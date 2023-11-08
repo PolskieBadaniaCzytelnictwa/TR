@@ -155,26 +155,17 @@ for pismo in wyniki.index.unique():
     except:
         pass
 
-st.markdown("""<div style="font-size:12px">Statystyki: Zasięg CCS i estymacja na populację, populacja 29 545 225</div>""", unsafe_allow_html=True)
-
-if estymacja == 'Zasieg':
-    st.markdown("""<div style="font-size:12px; margin-left: 2px">Zasięg (w %)</div>""", unsafe_allow_html=True)
-else:
-    st.markdown("""<div style="font-size:12px; margin-left: 2px">Estymacja na populację</div>""", unsafe_allow_html=True)
-
-st.markdown("""<div style="font-size:12px">Fale:</div>""", unsafe_allow_html=True)
+st.markdown("""<div style="font-size:12px">Statystyki: Zasięg CCS i Estymacja na populację, populacja 29 545 225</div>""", unsafe_allow_html=True)
 
 
-st.markdown(f"""<div style="font-size:12px; margin-left: 2px">{min(selected_miesiace)}-{max(selected_miesiace)}/2023:</div>""", unsafe_allow_html=True)
+
+st.markdown("""<div style="font-size:12px">Fale: 1-9/2023</div>""", unsafe_allow_html=True)
 
 
-st.markdown("""<div style="font-size:12px">Dane CCS: Druk i E-wydania –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius/</div>""", unsafe_allow_html=True)
+
+
+st.markdown("""<div style="font-size:12px">Dane CCS: Druk, E-wydania, Współczytelnictwo –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius</div>""", unsafe_allow_html=True)
             
 st.markdown(f"""<div style="font-size:12px">{tekst}</div>""", unsafe_allow_html=True)
-
-przyp = "PRZYPOMINAMY UŻYTKOWNIKOM, ŻE ZGODNIE Z ZALECENIAMI PBC NIE NALEŻY POSŁUGIWAĆ SIĘ WYNIKAMI TEGO BADANIA BEZ ZACHOWANIA REGUŁ WNIOSKOWANIA STATYSTYCZNEGO. SZCZEGÓLNIE POWAŻNY BŁĄD MOŻE ZOSTAĆ POPEŁNIONY W PRZYPADKU, KIEDY NIEISTOTNA STATYSTYCZNIE RÓŻNICA MIĘDZY DWOMA WSKAŹNIKAMI CZYTELNICTWA JEST INTERPRETOWANA JAKO RÓŻNICA W POZIOMIE CZYTELNICTWA MIMO, IŻ MIEŚCI SIĘ ONA W GRANICACH BŁĘDU NA POZIOMIE UFNOŚCI 95%."
-
-
-st.markdown(f"""<div style="font-size:12px; margin-top: 2px; margin-bottom: 0px">{przyp}</div>""", unsafe_allow_html=True)
 
 st.markdown("""<div style="font-size:12px">Definicje: www.pbc.pl/wskazniki/</div>""", unsafe_allow_html=True)
