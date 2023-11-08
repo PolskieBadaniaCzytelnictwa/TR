@@ -2,11 +2,14 @@ import streamlit as st
 
 primary_color = "#00AADB"
 
+
 st.set_page_config(
     page_title="Total Reach 360°",
     page_icon=":bar_chart:",
-    layout="wide",
+    layout="centered",
 )
+
+
 
 
 import pandas as pd
