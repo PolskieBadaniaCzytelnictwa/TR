@@ -6,7 +6,7 @@ primary_color = "#00AADB"
 st.set_page_config(
     page_title="Total Reach 360°",
     page_icon=":bar_chart:",
-    layout="centered",
+    layout="wide",
 )
 
 
@@ -49,7 +49,7 @@ for i in selected_tematyki:
     for j in pisma_lista:
         for k in wskaźniki_lista:
             if k != 'Total Reach 360°':
-                wyniki.loc[j, k] = df[(df['tytuł'] == j) & (df['wskaźnik'] == k) & (df['miesiąc'].between(selected_miesiace[0], selected_miesiace[1]))]['wynik'].mean()
+                wyniki.loc[j, k] = df[(df['tytuł'] == j) & (df['wskaźnik'] == k) & (df['miesiąc'].between(selected_miesiace[0], selected_miesiace[-1]))]['wynik'].mean()
             else:
                 wyniki.loc[j, k] = max(wyniki.loc[j, 'Druk i E-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['wskaźnik'] == 'współczytelnictwo')]['wynik'])) * wyniki.loc[j, 'Druk i E-wydania'] + wyniki.loc[j, 'www'])
 
@@ -74,8 +74,14 @@ if show_wspolczytelnictwo:
 
 wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if not pd.isna(x) and estymacja == 'Zasięg (%)' else '{:,.0f}'.format(x).replace(',', ' ') if not pd.isna(x) else x)
 
-
-wyniki_sformatowane = wyniki_sformatowane.astype('object').fillna('-')
+if www_option ==  'Total Reach 360° (Druk i E-Wydania, www)' or www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)':
+    wyniki_sformatowane = wyniki_sformatowane.astype('object').fillna('-')
+elif www_option ==  'www':
+    wyniki_sformatowane.dropna(subset = ['www'], inplace=True)
+elif www_option ==  'www PC':
+    wyniki_sformatowane.dropna(subset = ['www PC'], inplace=True)
+elif www_option ==  'www Mobile':
+    wyniki_sformatowane.dropna(subset = ['www Mobile'], inplace=True)
 
 
 wyniki_sformatowane = wyniki_sformatowane.reset_index()
