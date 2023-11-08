@@ -110,6 +110,8 @@ else:
         del wyniki_sformatowane['www']
         del wyniki_sformatowane['Druk i E-wydania']
 
+del wyniki_sformatowane['Wydawca']
+
 if 'Total Reach 360°' in wyniki_sformatowane.columns :
     wyniki_sformatowane_styled = wyniki_sformatowane.style.set_table_styles([
     {'selector': 'table', 'props': [('text-align', 'center')]},
