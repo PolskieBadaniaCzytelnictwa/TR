@@ -21,7 +21,7 @@ df = pd.read_excel('TBR_9m.xlsx')
 tematyka = pd.read_excel('kat.xlsx')
 
 tematyka_lista = tematyka['kat'].unique()
-wskaźniki_lista = ['Druk+e-wydania', 'www PC', 'www Mobile', 'www', 'Total Reach 360°']
+wskaźniki_lista = ['Druk i E-wydania', 'www PC', 'www Mobile', 'www', 'Total Reach 360°']
 miesiące_lista = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 strony = pd.read_excel('strony.xlsx')
@@ -30,22 +30,18 @@ wydawca_legenda_dict = dict(zip(tematyka['tytuł'], tematyka['wydawca']))
 
 st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360°</h1>", unsafe_allow_html=True)
 
-selected_kwartaly = st.multiselect(
-    "Wybierz kwartały:",
-    ["I kwartał 2023", "II kwartał 2023", "III kwartał 2023"],
-    default=["I kwartał 2023", "II kwartał 2023", "III kwartał 2023"]
-)
-
-# Mapowanie wybranych kwartałów na odpowiadające im miesiące
-miesiace_mapping = {"I kwartał 2023": [1, 2, 3], "II kwartał 2023": [4, 5, 6], "III kwartał 2023": [7, 8, 9]}
-selected_miesiace = [item for kwartal in selected_kwartaly for item in miesiace_mapping[kwartal]]
+selected_miesiace = [1,2,3,4,5,6,7,8,9]
 
 selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
 
 estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
-www_option = st.radio("Określ zakres danych www:", ['www PC oraz www Mobile', 'www'], horizontal=True, index =0 )
+www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
+                                                    'Druk i E-wydania', 'www', 'www PC', 'www Mobile'], horizontal=True, index =0)
 
-show_wspolczytelnictwo = st.checkbox("Pokaż współczytelnictwo", value=False)
+if www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)' or www_option == 'Total Reach 360° (Druk i E-Wydania, www)': 
+    show_wspolczytelnictwo = st.checkbox("Pokaż współczytelnictwo", value=False)
+else:
+    show_wspolczytelnictwo = False
 
 wyniki = pd.DataFrame()
 
@@ -56,19 +52,33 @@ for i in selected_tematyki:
             if k != 'Total Reach 360°':
                 wyniki.loc[j, k] = df[(df['tytuł'] == j) & (df['wskaźnik'] == k) & (df['miesiąc'].between(selected_miesiace[0], selected_miesiace[1]))]['wynik'].mean()
             else:
-                wyniki.loc[j, k] = max(wyniki.loc[j, 'Druk+e-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['wskaźnik'] == 'współczytelnictwo')]['wynik'])) * wyniki.loc[j, 'Druk+e-wydania'] + wyniki.loc[j, 'www'])
+                wyniki.loc[j, k] = max(wyniki.loc[j, 'Druk i E-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['wskaźnik'] == 'współczytelnictwo')]['wynik'])) * wyniki.loc[j, 'Druk i E-wydania'] + wyniki.loc[j, 'www'])
 
-wyniki = wyniki.sort_values('Total Reach 360°', ascending=False)
+if www_option == 'Druk i E-wydania':
+    wyniki = wyniki.sort_values('Druk i E-wydania', ascending=False)
+elif www_option == 'www':
+    wyniki = wyniki.sort_values('www', ascending=False)
+elif www_option == 'www PC':
+    wyniki = wyniki.sort_values('www PC', ascending=False)
+elif www_option == 'www Mobile':
+    wyniki = wyniki.sort_values('www Mobile', ascending=False)
+else:
+    wyniki = wyniki.sort_values('Total Reach 360°', ascending=False)
+
 
 if estymacja == 'Zasięg (%)':
     wyniki = wyniki / 29545225 * 100
     wyniki = wyniki.round(2)
 
 if show_wspolczytelnictwo:
-    wyniki['Współczytelnictwo'] = wyniki['Druk+e-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
+    wyniki['Współczytelnictwo'] = wyniki['Druk i E-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
 
 wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if not pd.isna(x) and estymacja == 'Zasięg (%)' else '{:,.0f}'.format(x).replace(',', ' ') if not pd.isna(x) else x)
+
+
 wyniki_sformatowane = wyniki_sformatowane.astype('object').fillna('-')
+
+
 wyniki_sformatowane = wyniki_sformatowane.reset_index()
 wyniki_sformatowane.columns = ['Marka prasowa'] + list(wyniki_sformatowane.columns[1:])
 wyniki_sformatowane['Wydawca'] = wyniki_sformatowane['Marka prasowa'].map(wydawca_legenda_dict)
@@ -76,22 +86,47 @@ new_column_order = ['Marka prasowa', 'Wydawca'] + list(wyniki_sformatowane.colum
 wyniki_sformatowane = wyniki_sformatowane[new_column_order]
 wyniki_sformatowane.index+=1
 
-if www_option == 'www':
+if www_option ==  'Total Reach 360° (Druk i E-Wydania, www)':
     del wyniki_sformatowane['www PC']
     del wyniki_sformatowane['www Mobile']
-else:
+elif www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)':
     del wyniki_sformatowane['www']
- 
+else:
+    del wyniki_sformatowane['Total Reach 360°']
+    if www_option ==  'Druk i E-wydania':
+        del wyniki_sformatowane['www PC']
+        del wyniki_sformatowane['www Mobile']
+        del wyniki_sformatowane['www']
+    elif www_option ==  'www':
+        del wyniki_sformatowane['www PC']
+        del wyniki_sformatowane['www Mobile']
+        del wyniki_sformatowane['Druk i E-wydania']
+    elif www_option ==  'www PC':
+        del wyniki_sformatowane['www']
+        del wyniki_sformatowane['www Mobile']
+        del wyniki_sformatowane['Druk i E-wydania']
+    elif www_option ==  'www Mobile':
+        del wyniki_sformatowane['www PC']
+        del wyniki_sformatowane['www']
+        del wyniki_sformatowane['Druk i E-wydania']
 
-wyniki_sformatowane_styled = wyniki_sformatowane.style.set_table_styles([
+if 'Total Reach 360°' in wyniki_sformatowane.columns :
+    wyniki_sformatowane_styled = wyniki_sformatowane.style.set_table_styles([
     {'selector': 'table', 'props': [('text-align', 'center')]},
     {'selector': 'th', 'props': [('text-align', 'center')]},
     {'selector': 'td', 'props': [('text-align', 'center')]},
     {'selector': 'th.col0, td.col0', 'props': [('text-align', 'left')]}  # Wyrównaj pierwszą kolumnę do lewej
 ]).set_properties(
     subset=['Total Reach 360°'], 
-    **{'font-weight': 'bold'}
-)
+    **{'font-weight': 'bold'})
+
+else:
+    wyniki_sformatowane_styled = wyniki_sformatowane.style.set_table_styles([
+    {'selector': 'table', 'props': [('text-align', 'center')]},
+    {'selector': 'th', 'props': [('text-align', 'center')]},
+    {'selector': 'td', 'props': [('text-align', 'center')]},
+    {'selector': 'th.col0, td.col0', 'props': [('text-align', 'left')]}  # Wyrównaj pierwszą kolumnę do lewej
+])
 
 
 # Przekształć stylizowaną ramkę danych do formatu HTML
@@ -126,7 +161,7 @@ st.markdown("""<div style="font-size:12px">Fale:</div>""", unsafe_allow_html=Tru
 st.markdown(f"""<div style="font-size:12px; margin-left: 2px">{min(selected_miesiace)}-{max(selected_miesiace)}/2023:</div>""", unsafe_allow_html=True)
 
 
-st.markdown("""<div style="font-size:12px">Dane CCS: Druk+e-wydania –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius/</div>""", unsafe_allow_html=True)
+st.markdown("""<div style="font-size:12px">Dane CCS: Druk i E-wydania –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius/</div>""", unsafe_allow_html=True)
             
 st.markdown(f"""<div style="font-size:12px">{tekst}</div>""", unsafe_allow_html=True)
 
