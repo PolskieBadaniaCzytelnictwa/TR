@@ -71,7 +71,7 @@ else:
 
 if estymacja == 'Zasięg (%)':
     wyniki = wyniki / 29545225 * 100
-    wyniki = wyniki.round(1)
+    wyniki = wyniki.round(2)
 
 if show_wspolczytelnictwo:
     wyniki['Współczytelnictwo'] = wyniki['Druk i E-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
