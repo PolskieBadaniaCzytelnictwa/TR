@@ -151,7 +151,7 @@ st.markdown(html_table, unsafe_allow_html=True)
 tekst = 'Badane marki:'
 for pismo in wyniki.index.unique():
     try:
-        tekst = f'{tekst} {pismo} : {tematyka_legenda_dict[pismo]},'
+        tekst = f'{tekst} {pismo} i {tematyka_legenda_dict[pismo]},'
     except:
         pass
 
