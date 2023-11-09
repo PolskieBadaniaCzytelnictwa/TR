@@ -1,18 +1,13 @@
 import streamlit as st
+import pandas as pd
 
 primary_color = "#00AADB"
-
 
 st.set_page_config(
     page_title="Total Reach 360°",
     page_icon=":bar_chart:",
     layout="wide",
 )
-
-
-
-
-import pandas as pd
 
 pd.set_option('display.float_format', '{:.0f}'.format)
 
@@ -29,7 +24,7 @@ wydawca_legenda_dict = dict(zip(tematyka['tytuł'], tematyka['wydawca']))
 
 st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360°</h1>", unsafe_allow_html=True)
 
-selected_miesiace = [1,2,3,4,5,6,7,8,9]
+selected_miesiace = [341,342,343,344,345,346,347,348,349]
 
 selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
 
@@ -42,6 +37,10 @@ if www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)' 
 else:
     show_wspolczytelnictwo = False
 
+
+wyszukiwarka = st.text_input("Wyszukaj markę prasową:",  "", key="placeholder")
+
+
 wyniki = pd.DataFrame()
 
 for i in selected_tematyki:
@@ -49,9 +48,12 @@ for i in selected_tematyki:
     for j in pisma_lista:
         for k in wskaźniki_lista:
             if k != 'Total Reach 360°':
-                wyniki.loc[j, k] = df[(df['tytuł'] == j) & (df['wskaźnik'] == k) & (df['miesiąc'].between(selected_miesiace[0], selected_miesiace[-1]))]['wynik'].mean()
+                wyniki.loc[j, k] = df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == k) & (df['WAVE'].between(selected_miesiace[0], selected_miesiace[-1]))]['WYNIK'].mean()
             else:
-                wyniki.loc[j, k] = max(wyniki.loc[j, 'Druk i E-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['wskaźnik'] == 'współczytelnictwo')]['wynik'])) * wyniki.loc[j, 'Druk i E-wydania'] + wyniki.loc[j, 'www'])
+                wyniki.loc[j, k] = max(wyniki.loc[j, 'Druk i E-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'współczytelnictwo')]['WYNIK'])) * wyniki.loc[j, 'Druk i E-wydania'] + wyniki.loc[j, 'www'])
+
+wyniki = wyniki[wyniki.index.str.contains(wyszukiwarka, case=False, na=False)]
+
 
 if www_option == 'Druk i E-wydania':
     wyniki = wyniki.sort_values('Druk i E-wydania', ascending=False)
@@ -67,12 +69,13 @@ else:
 
 if estymacja == 'Zasięg (%)':
     wyniki = wyniki / 29545225 * 100
-    wyniki = wyniki.round(2)
+    wyniki = wyniki.round(1)
 
 if show_wspolczytelnictwo:
     wyniki['Współczytelnictwo'] = wyniki['Druk i E-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
 
 wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if not pd.isna(x) and estymacja == 'Zasięg (%)' else '{:,.0f}'.format(x).replace(',', ' ') if not pd.isna(x) else x)
+
 
 if www_option ==  'Total Reach 360° (Druk i E-Wydania, www)' or www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)':
     wyniki_sformatowane = wyniki_sformatowane.astype('object').fillna('-')
