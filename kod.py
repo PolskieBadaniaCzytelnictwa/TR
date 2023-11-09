@@ -27,6 +27,8 @@ st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360�
 selected_miesiace = [341,342,343,344,345,346,347,348,349]
 
 selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
+if selected_tematyki == []:
+    selected_tematyki = tematyka_lista
 
 estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
