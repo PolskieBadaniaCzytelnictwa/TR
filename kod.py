@@ -33,8 +33,8 @@ if selected_tematyki == []:
 estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
 www_option = st.radio("Określ zakres danych www:", [ 'Total Reach 360° (Druk i E-Wydania, www)',
                                                     'Druk i E-wydania', 'www'], horizontal=True, index =0)
-Płeć = st.radio("Wybierz płeć:", ['Całość', 'Kobiety', 'Mężczyźni'], horizontal=True, index =0)
-Wiek = st.radio("Wybierz grupę wiekową:", ['Całość','15-24', '25-34', '35-44', '45-59', '60-75'], horizontal=True, index =0)
+Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], horizontal=True, index =0)
+Wiek = st.radio("Wybierz grupę wiekową:", ['Wszyscy','15-24', '25-34', '35-44', '45-59', '60-75'], horizontal=True, index =0)
 
 
 if www_option == 'Total Reach 360° (Druk i E-Wydania, www)': 
@@ -87,37 +87,37 @@ if Płeć == 'Kobiety' and Wiek == '15-24':
         suma = 1812738
 if Płeć == 'Mężczyźni' and Wiek == '15-24':
     suma = 1893705
-if Płeć == 'Całość' and Wiek == '15-24':
+if Płeć == 'Wszyscy' and Wiek == '15-24':
     suma = 3706443
 if Płeć == 'Kobiety' and Wiek == '25-34':
     suma = 2387225
 if Płeć == 'Mężczyźni' and Wiek == '25-34':
     suma = 2440240
-if Płeć == 'Całość' and Wiek == '25-34':
+if Płeć == 'Wszyscy' and Wiek == '25-34':
     suma = 4827466
 if Płeć == 'Kobiety' and Wiek == '35-44':
     suma = 3054633
 if Płeć == 'Mężczyźni' and Wiek == '35-44':
     suma = 3054845
-if Płeć == 'Całość' and Wiek == '35-44':
+if Płeć == 'Wszyscy' and Wiek == '35-44':
     suma =  6109478
 if Płeć == 'Kobiety' and Wiek == '45-59':
     suma = 3762817
 if Płeć == 'Mężczyźni' and Wiek == '45-59':
     suma = 3596251
-if Płeć == 'Całość' and Wiek == '45-59':
+if Płeć == 'Wszyscy' and Wiek == '45-59':
     suma =  7359068
 if Płeć == 'Kobiety' and Wiek == '60-75':
     suma = 4205663
 if Płeć == 'Mężczyźni' and Wiek == '60-75':
     suma = 3337109
-if Płeć == 'Całość' and Wiek == '60-75':
+if Płeć == 'Wszyscy' and Wiek == '60-75':
     suma =  7542772
-if Płeć == 'Całość' and Wiek == 'Całość':
+if Płeć == 'Wszyscy' and Wiek == 'Wszyscy':
     suma = 29545225
-if Płeć == 'Kobiety' and Wiek == 'Całość':
+if Płeć == 'Kobiety' and Wiek == 'Wszyscy':
     suma =  15223075
-if Płeć == 'Mężczyźni' and Wiek == 'Całość':
+if Płeć == 'Mężczyźni' and Wiek == 'Wszyscy':
     suma =  14322150
 
 if estymacja == 'Zasięg (%)':
