@@ -171,7 +171,7 @@ else:
 # Przekształć stylizowaną ramkę danych do formatu HTML
 
 def make_clickable(tytul):
-    link = f"https://www.pbc.pl/badany-tytul/{tytul.lower().replace(' ', '-')}/"
+    link = f"https://www.pbc.pl/badany-tytul/{tytul.lower().replace(' ', '-').replace('ó', 'o').replace('ś', 's').replace('ć', 'c').replace('ł', 'l').replace('ł', 'l').replace('ń', 'n').replace('ó', 'o').replace('ż', 'z')}/"
     return f'<a target="_blank" href="{link}">{tytul}</a>'
 
 wyniki_sformatowane['Marka prasowa'] = wyniki_sformatowane['Marka prasowa'].apply(make_clickable)
