@@ -33,8 +33,15 @@ if selected_tematyki == []:
 estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
 www_option = st.radio("Określ zakres danych www:", [ 'Total Reach 360° (Druk i E-Wydania, www)',
                                                     'Druk i E-wydania', 'www'], horizontal=True, index =0)
+
+def display_image(color):
+    image_url = f"https://via.placeholder.com/150/{color[1:]}/000000?text={'Kobieta' if color == '00AADB' else 'Mężczyzna'}"
+    st.image(image_url, caption=f"Obrazek - {'Kobieta' if color == '00AADB' else 'Mężczyzna'}", use_column_width=True)
+
 Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], horizontal=True, index =0)
-Wiek = st.radio("Wybierz grupę wiekową:", ['Wszyscy','15-24', '25-34', '35-44', '45-59', '60-75'], horizontal=True, index =0)
+
+Wiek = st.multiselect("Wybierz grupę wiekową:", ['15-24', '25-34', '35-44', '45-59', '60-75'], default=['15-24', '25-34', '35-44', '45-59', '60-75'])
+
 
 
 if www_option == 'Total Reach 360° (Druk i E-Wydania, www)': 
@@ -58,16 +65,10 @@ for i in selected_tematyki:
                     df_g = df_g[df_g['P']=='K']
                 if Płeć == 'Mężczyźni':
                     df_g = df_g[df_g['P']=='M']
-                if Wiek == '15-24':
-                    df_g = df_g[df_g['W']==1]
-                if Wiek == '25-34':
-                    df_g = df_g[df_g['W']==2]
-                if Wiek == '35-44':
-                    df_g = df_g[df_g['W']==3]
-                if Wiek == '45-59':
-                    df_g = df_g[df_g['W']==4]
-                if Wiek == '60-75':
-                    df_g = df_g[df_g['W']==5]
+                wartosci_numeryczne = {'15-24': 1, '25-34': 2, '35-44': 3, '45-59': 4, '60-75': 5}
+                Wiek_num = [wartosci_numeryczne[grupa] for grupa in Wiek]
+                df_g = df_g[df_g['W'].isin(Wiek_num)]
+               
                 
                 wyniki.loc[j, k] = df_g[(df_g['tytuł'] == j) & (df_g['WSKAŹNIK'] == k) & (df_g['WAVE'].between(selected_miesiace[0], selected_miesiace[-1]))]['WYNIK'].sum()
             else:
@@ -83,42 +84,27 @@ elif www_option == 'www':
 else:
     wyniki = wyniki.sort_values('Total Reach 360°', ascending=False)
 
-if Płeć == 'Kobiety' and Wiek == '15-24':
-        suma = 1812738
-if Płeć == 'Mężczyźni' and Wiek == '15-24':
-    suma = 1893705
-if Płeć == 'Wszyscy' and Wiek == '15-24':
-    suma = 3706443
-if Płeć == 'Kobiety' and Wiek == '25-34':
-    suma = 2387225
-if Płeć == 'Mężczyźni' and Wiek == '25-34':
-    suma = 2440240
-if Płeć == 'Wszyscy' and Wiek == '25-34':
-    suma = 4827466
-if Płeć == 'Kobiety' and Wiek == '35-44':
-    suma = 3054633
-if Płeć == 'Mężczyźni' and Wiek == '35-44':
-    suma = 3054845
-if Płeć == 'Wszyscy' and Wiek == '35-44':
-    suma =  6109478
-if Płeć == 'Kobiety' and Wiek == '45-59':
-    suma = 3762817
-if Płeć == 'Mężczyźni' and Wiek == '45-59':
-    suma = 3596251
-if Płeć == 'Wszyscy' and Wiek == '45-59':
-    suma =  7359068
-if Płeć == 'Kobiety' and Wiek == '60-75':
-    suma = 4205663
-if Płeć == 'Mężczyźni' and Wiek == '60-75':
-    suma = 3337109
-if Płeć == 'Wszyscy' and Wiek == '60-75':
-    suma =  7542772
-if Płeć == 'Wszyscy' and Wiek == 'Wszyscy':
-    suma = 29545225
-if Płeć == 'Kobiety' and Wiek == 'Wszyscy':
-    suma =  15223075
-if Płeć == 'Mężczyźni' and Wiek == 'Wszyscy':
-    suma =  14322150
+suma = 0 
+if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 1 in Wiek_num:
+    suma += 1812738
+if (Płeć == 'Mężczyźni' or Płeć == 'Wszyscy') and 1 in Wiek_num:
+    suma += 1893705
+if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 2 in Wiek_num:
+    suma += 2387225
+if (Płeć == 'Mężczyźni' or Płeć == 'Wszyscy') and 2 in Wiek_num:
+    suma += 2440240
+if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 3 in Wiek_num:
+    suma += 3054633
+if (Płeć == 'Mężczyźni' or Płeć == 'Wszyscy') and 3 in Wiek_num:
+    suma += 3054845
+if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 4 in Wiek_num:
+    suma += 3762817
+if (Płeć == 'Mężczyźni' or Płeć == 'Wszyscy') and 4 in Wiek_num:
+    suma += 3596251
+if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 5 in Wiek_num:
+    suma += 4205663
+if (Płeć == 'Mężczyźni' or Płeć == 'Wszyscy') and 5 in Wiek_num:
+    suma += 3337109
 
 if estymacja == 'Zasięg (%)':
     wyniki = wyniki / suma * 100
@@ -126,6 +112,7 @@ if estymacja == 'Zasięg (%)':
 
 if show_wspolczytelnictwo:
     wyniki['Współczytelnictwo'] = wyniki['Druk i E-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
+
 
 wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if not pd.isna(x) and estymacja == 'Zasięg (%)' else '{:,.0f}'.format(x).replace(',', ' ') if not pd.isna(x) else x)
 
@@ -140,8 +127,12 @@ wyniki_sformatowane = wyniki_sformatowane.reset_index()
 wyniki_sformatowane.columns = ['Marka prasowa'] + list(wyniki_sformatowane.columns[1:])
 wyniki_sformatowane['Wydawca'] = wyniki_sformatowane['Marka prasowa'].map(wydawca_legenda_dict)
 new_column_order = ['Marka prasowa', 'Wydawca'] + list(wyniki_sformatowane.columns[1:-1])
+#wyniki_sformatowane['Marka prasowa'] = wyniki_sformatowane['Marka prasowa'].apply(lambda x: f"[{x}](https://www.pbc.pl/badany-tytul/{x.lower().replace(' ', '-')}/)")
+
+
 wyniki_sformatowane = wyniki_sformatowane[new_column_order]
 wyniki_sformatowane.index+=1
+
 
 if www_option !=  'Total Reach 360° (Druk i E-Wydania, www)':
     del wyniki_sformatowane['Total Reach 360°']
@@ -178,15 +169,21 @@ else:
 
 
 # Przekształć stylizowaną ramkę danych do formatu HTML
-html_table = wyniki_sformatowane_styled.to_html()
+
+def make_clickable(tytul):
+    link = f"https://www.pbc.pl/badany-tytul/{tytul.lower().replace(' ', '-')}/"
+    return f'<a target="_blank" href="{link}">{tytul}</a>'
+
+wyniki_sformatowane['Marka prasowa'] = wyniki_sformatowane['Marka prasowa'].apply(make_clickable)
 
 
-# Dodaj styl CSS, aby umieścić tabelę na środku
+html_table = wyniki_sformatowane_styled.to_html(escape=False)
+
+
 html_table = f"<div style='margin: auto;'>{html_table}</div>"
 
 # Wyświetl tabelę
 st.markdown(html_table, unsafe_allow_html=True)
-
 
 
 tekst = 'Badane marki:'
@@ -196,7 +193,7 @@ for pismo in wyniki.index.unique():
     except:
         pass
 
-st.markdown(f"""<div style="font-size:12px">Statystyki: Zasięg CCS i Estymacja na populację, N =  {suma}</div>""", unsafe_allow_html=True)
+st.markdown(f"""<div style="font-size:12px">Statystyki: Zasięg CCS i Estymacja na populację, Populacja w wybranej grupie celowej =  {suma}</div>""", unsafe_allow_html=True)
 
 
 
