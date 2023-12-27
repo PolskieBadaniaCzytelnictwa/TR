@@ -177,7 +177,7 @@ def make_clickable(tytul):
 wyniki_sformatowane['Marka prasowa'] = wyniki_sformatowane['Marka prasowa'].apply(make_clickable)
 
 
-html_table = wyniki_sformatowane_styled.to_html(escape=False)
+html_table = wyniki_sformatowane_styled.to_html()
 
 
 html_table = f"<div style='margin: auto;'>{html_table}</div>"
