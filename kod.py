@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 
 primary_color = "#00AADB"
 
@@ -85,6 +86,10 @@ for i in selected_tematyki:
 wyniki = wyniki[wyniki.index.str.contains(wyszukiwarka, case=False, na=False)]
 wyniki_cal = wyniki_cal[wyniki_cal.index.str.contains(wyszukiwarka, case=False, na=False)]
 
+if estymacja == 'Affinity':
+    wyniki = wyniki / wyniki_cal  * 29545225
+    wyniki = wyniki.fillna(0)
+
 if www_option == 'Druk i E-wydania':
     wyniki = wyniki.sort_values('Druk i E-wydania', ascending=False)
 elif www_option == 'www':
@@ -96,8 +101,7 @@ elif www_option == 'www Mobile':
 else:
     wyniki = wyniki.sort_values('Total Reach 360°', ascending=False)
 
-if estymacja == 'Affinity':
-    wyniki = wyniki / wyniki_cal  * 29545225
+
 
 
 suma = 0 
@@ -129,8 +133,11 @@ if estymacja == 'Zasięg (%)' or  estymacja == 'Affinity' :
 if show_wspolczytelnictwo:
     wyniki['Współczytelnictwo'] = wyniki['Druk i E-wydania'] + wyniki['www'] - wyniki['Total Reach 360°']
 
+wyniki.replace(0, np.nan, inplace=True)
 
 wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if not pd.isna(x) and estymacja == 'Zasięg (%)' else '{:,.0f}'.format(x).replace(',', ' ') if not pd.isna(x) else x)
+
+wyniki_sformatowane = wyniki_sformatowane.fillna('-')
 
 if www_option ==  'Total Reach 360° (Druk i E-Wydania, www)':
     del wyniki_sformatowane['www PC']
@@ -202,7 +209,6 @@ def make_clickable(tytul):
     return f'<a target="_blank" href="{link}">{tytul}</a>'
 
 wyniki_sformatowane['Marka prasowa'] = wyniki_sformatowane['Marka prasowa'].apply(make_clickable)
-
 
 html_table = wyniki_sformatowane_styled.to_html()
 
