@@ -15,7 +15,7 @@ df = pd.read_excel('TBR360_g.xlsx')
 tematyka = pd.read_excel('kat.xlsx')
 
 tematyka_lista = tematyka['kat'].unique()
-wskaźniki_lista = ['Druk i E-wydania', 'www', 'Total Reach 360°']
+wskaźniki_lista = ['Druk i E-wydania', 'www PC', 'www Mobile', 'www', 'Total Reach 360°']
 miesiące_lista = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 strony = pd.read_excel('strony.xlsx')
@@ -30,9 +30,6 @@ selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, defaul
 if selected_tematyki == []:
     selected_tematyki = tematyka_lista
 
-estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
-www_option = st.radio("Określ zakres danych www:", [ 'Total Reach 360° (Druk i E-Wydania, www)',
-                                                    'Druk i E-wydania', 'www'], horizontal=True, index =0)
 
 def display_image(color):
     image_url = f"https://via.placeholder.com/150/{color[1:]}/000000?text={'Kobieta' if color == '00AADB' else 'Mężczyzna'}"
@@ -42,18 +39,27 @@ Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], hor
 
 Wiek = st.multiselect("Wybierz grupę wiekową:", ['15-24', '25-34', '35-44', '45-59', '60-75'], default=['15-24', '25-34', '35-44', '45-59', '60-75'])
 
+if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75']: 
+    estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
+else:
+    estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity'], horizontal=True, index = 0)
 
 
-if www_option == 'Total Reach 360° (Druk i E-Wydania, www)': 
+www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
+                                                    'Druk i E-wydania', 'www', 'www PC', 'www Mobile'], horizontal=True, index =0)
+
+if www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)' or www_option == 'Total Reach 360° (Druk i E-Wydania, www)': 
     show_wspolczytelnictwo = st.checkbox("Pokaż współczytelnictwo", value=False)
 else:
     show_wspolczytelnictwo = False
 
+show_wydawca = st.checkbox("Pokaż wydawców", value=False)
 
 wyszukiwarka = st.text_input("Wyszukaj markę prasową:",  "", key="placeholder")
 
 
 wyniki = pd.DataFrame()
+wyniki_cal = pd.DataFrame()
 
 for i in selected_tematyki:
     pisma_lista = tematyka[tematyka['kat'] == i]['tytuł'].to_list()
@@ -69,20 +75,30 @@ for i in selected_tematyki:
                 Wiek_num = [wartosci_numeryczne[grupa] for grupa in Wiek]
                 df_g = df_g[df_g['W'].isin(Wiek_num)]
                
-                
                 wyniki.loc[j, k] = df_g[(df_g['tytuł'] == j) & (df_g['WSKAŹNIK'] == k) & (df_g['WAVE'].between(selected_miesiace[0], selected_miesiace[-1]))]['WYNIK'].sum()
+                wyniki_cal.loc[j, k] = df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == k) & (df['WAVE'].between(selected_miesiace[0], selected_miesiace[-1]))]['WYNIK'].sum()
             else:
                 wyniki.loc[j, k] = max(wyniki.loc[j, 'Druk i E-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'współczytelnictwo')]['WYNIK'])) * wyniki.loc[j, 'Druk i E-wydania'] + wyniki.loc[j, 'www'])
+                wyniki_cal.loc[j, k] = max(wyniki_cal.loc[j, 'Druk i E-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'współczytelnictwo')]['WYNIK'])) * wyniki_cal.loc[j, 'Druk i E-wydania'] + wyniki_cal.loc[j, 'www'])
+
 
 wyniki = wyniki[wyniki.index.str.contains(wyszukiwarka, case=False, na=False)]
-
+wyniki_cal = wyniki_cal[wyniki_cal.index.str.contains(wyszukiwarka, case=False, na=False)]
 
 if www_option == 'Druk i E-wydania':
     wyniki = wyniki.sort_values('Druk i E-wydania', ascending=False)
 elif www_option == 'www':
     wyniki = wyniki.sort_values('www', ascending=False)
+elif www_option == 'www PC':
+    wyniki = wyniki.sort_values('www PC', ascending=False)
+elif www_option == 'www Mobile':
+    wyniki = wyniki.sort_values('www Mobile', ascending=False)
 else:
     wyniki = wyniki.sort_values('Total Reach 360°', ascending=False)
+
+if estymacja == 'Affinity':
+    wyniki = wyniki / wyniki_cal  * 29545225
+
 
 suma = 0 
 if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 1 in Wiek_num:
@@ -106,7 +122,7 @@ if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 5 in Wiek_num:
 if (Płeć == 'Mężczyźni' or Płeć == 'Wszyscy') and 5 in Wiek_num:
     suma += 3337109
 
-if estymacja == 'Zasięg (%)':
+if estymacja == 'Zasięg (%)' or  estymacja == 'Affinity' :
     wyniki = wyniki / suma * 100
     wyniki = wyniki.round(2)
 
@@ -116,6 +132,29 @@ if show_wspolczytelnictwo:
 
 wyniki_sformatowane = wyniki.applymap(lambda x: '{:,.2f}%'.format(x).replace('.', ',') if not pd.isna(x) and estymacja == 'Zasięg (%)' else '{:,.0f}'.format(x).replace(',', ' ') if not pd.isna(x) else x)
 
+if www_option ==  'Total Reach 360° (Druk i E-Wydania, www)':
+    del wyniki_sformatowane['www PC']
+    del wyniki_sformatowane['www Mobile']
+elif www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)':
+    del wyniki_sformatowane['www']
+else:
+    del wyniki_sformatowane['Total Reach 360°']
+    if www_option ==  'Druk i E-wydania':
+        del wyniki_sformatowane['www PC']
+        del wyniki_sformatowane['www Mobile']
+        del wyniki_sformatowane['www']
+    elif www_option ==  'www':
+        del wyniki_sformatowane['www PC']
+        del wyniki_sformatowane['www Mobile']
+        del wyniki_sformatowane['Druk i E-wydania']
+    elif www_option ==  'www PC':
+        del wyniki_sformatowane['www']
+        del wyniki_sformatowane['www Mobile']
+        del wyniki_sformatowane['Druk i E-wydania']
+    elif www_option ==  'www Mobile':
+        del wyniki_sformatowane['www PC']
+        del wyniki_sformatowane['www']
+        del wyniki_sformatowane['Druk i E-wydania']
 
 if www_option ==  'Total Reach 360° (Druk i E-Wydania, www)':
     wyniki_sformatowane = wyniki_sformatowane.astype('object').fillna('-')
@@ -134,20 +173,8 @@ wyniki_sformatowane = wyniki_sformatowane[new_column_order]
 wyniki_sformatowane.index+=1
 
 
-if www_option !=  'Total Reach 360° (Druk i E-Wydania, www)':
-    del wyniki_sformatowane['Total Reach 360°']
-    if www_option ==  'Druk i E-wydania':
-        del wyniki_sformatowane['www']
-    elif www_option ==  'www':
-        del wyniki_sformatowane['Druk i E-wydania']
-    elif www_option ==  'www PC':
-        del wyniki_sformatowane['www']
-        del wyniki_sformatowane['Druk i E-wydania']
-    elif www_option ==  'www Mobile':
-        del wyniki_sformatowane['www']
-        del wyniki_sformatowane['Druk i E-wydania']
-
-del wyniki_sformatowane['Wydawca']
+if show_wydawca == False:
+    del wyniki_sformatowane['Wydawca']
 
 if 'Total Reach 360°' in wyniki_sformatowane.columns :
     wyniki_sformatowane_styled = wyniki_sformatowane.style.set_table_styles([
