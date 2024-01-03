@@ -38,8 +38,10 @@ if selected_tematyki == []:
 if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75']: 
     estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
 else:
-    estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity'], horizontal=True, index = 0)
+    estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 0)
 
+if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek = ['15-24', '25-34', '35-44', '45-59', '60-75']:
+    estymacja = 'Estymacja na populację'
 
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
                                                     'Druk i E-wydania', 'www', 'www PC', 'www Mobile'], horizontal=True, index =0)
@@ -81,7 +83,7 @@ for i in selected_tematyki:
 wyniki = wyniki[wyniki.index.str.contains(wyszukiwarka, case=False, na=False)]
 wyniki_cal = wyniki_cal[wyniki_cal.index.str.contains(wyszukiwarka, case=False, na=False)]
 
-if estymacja == 'Affinity':
+if estymacja == 'Affinity index':
     wyniki = wyniki / wyniki_cal  * 29545225
     wyniki = wyniki.fillna(0)
 
@@ -121,7 +123,7 @@ if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 5 in Wiek_num:
 if (Płeć == 'Mężczyźni' or Płeć == 'Wszyscy') and 5 in Wiek_num:
     suma += 3337109
 
-if estymacja == 'Zasięg (%)' or  estymacja == 'Affinity' :
+if estymacja == 'Zasięg (%)' or  estymacja == 'Affinity index' :
     wyniki = wyniki / suma * 100
     wyniki = wyniki.round(2)
 
