@@ -40,7 +40,7 @@ if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75']
 else:
     estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 0)
 
-if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek = ['15-24', '25-34', '35-44', '45-59', '60-75']:
+if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '25-34', '35-44', '45-59', '60-75']:
     estymacja = 'Estymacja na populację'
 
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
