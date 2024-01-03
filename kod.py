@@ -27,18 +27,13 @@ st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360�
 
 selected_miesiace = [341,342,343,344,345,346,347,348,349]
 
-selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
-if selected_tematyki == []:
-    selected_tematyki = tematyka_lista
-
-
-def display_image(color):
-    image_url = f"https://via.placeholder.com/150/{color[1:]}/000000?text={'Kobieta' if color == '00AADB' else 'Mężczyzna'}"
-    st.image(image_url, caption=f"Obrazek - {'Kobieta' if color == '00AADB' else 'Mężczyzna'}", use_column_width=True)
-
 Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], horizontal=True, index =0)
 
 Wiek = st.multiselect("Wybierz grupę wiekową:", ['15-24', '25-34', '35-44', '45-59', '60-75'], default=['15-24', '25-34', '35-44', '45-59', '60-75'])
+
+selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
+if selected_tematyki == []:
+    selected_tematyki = tematyka_lista
 
 if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75']: 
     estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
