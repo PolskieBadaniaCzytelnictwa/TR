@@ -89,7 +89,7 @@ if Magazyny == False:
 if selected_tematyki == []:
     selected_tematyki = ['Dzienniki ogólnopolskie', 'Dzienniki regionalne', 'Dodatki', 'Magazyny']
 
-col1, col2, col3 = st.columns([2.25,1,1])
+col1, col2 = st.columns([2.25,2])
 
 if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75']: 
     with col1:
@@ -108,7 +108,7 @@ with col2:
     show_wydawca = st.checkbox("Pokaż wydawców", value=False)
 
 if www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)' or www_option == 'Total Reach 360° (Druk i E-Wydania, www)': 
-    with col3:
+    with col2:
         show_wspolczytelnictwo = st.checkbox("Pokaż współczytelnictwo", value=False)
 else:
     show_wspolczytelnictwo = False
