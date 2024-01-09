@@ -253,12 +253,16 @@ st.markdown(f"""<div style="font-size:12px">{tekst}</div>""", unsafe_allow_html=
 
 st.markdown("""<div style="font-size:12px">Definicje: www.pbc.pl/wskazniki/</div>""", unsafe_allow_html=True)
 
-if st.button("Zapisz raport do pliku"):
-    plik_wejsciowy = "szablon.xlsx"
-    arkusz = openpyxl.load_workbook(plik_wejsciowy)
-    arkusz.active['A1'] = 2
-    plik_wyjsciowy = "Total_reach012024.xlsx"
-    arkusz.save(plik_wyjsciowy)
-    st.success(f"Plik został zapisany jako {plik_wyjsciowy}.")
+plik_wejsciowy = "szablon.xlsx"
+arkusz = openpyxl.load_workbook(plik_wejsciowy)
+arkusz.active['A1'] = 2
 
-# Przekształć stylizowaną ramkę danych do formatu HTML
+plik_wyjsciowy = "zmodyfikowany_szablon.xlsx"
+arkusz.save(plik_wyjsciowy)
+
+st.download_button(
+    label="Zapisz raport do pliku",
+    data=open(plik_wyjsciowy, 'rb').read(),
+    file_name=plik_wyjsciowy,
+    mime="application/vnd.ms-excel"
+)
