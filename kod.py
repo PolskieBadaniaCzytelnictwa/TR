@@ -31,7 +31,11 @@ Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], hor
 
 Wiek = st.multiselect("Wybierz grupę wiekową:", ['15-24', '25-34', '35-44', '45-59', '60-75'], default=['15-24', '25-34', '35-44', '45-59', '60-75'])
 
-selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
+col1, col2 = st.columns([1.8,1])
+with col1:
+    selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
+with col2:
+    wyszukiwarka = st.text_input("Wyszukaj markę prasową:",  "", key="placeholder")
 if selected_tematyki == []:
     selected_tematyki = tematyka_lista
 
@@ -46,7 +50,7 @@ if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '2
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
                                                     'Druk i E-wydania', 'www', 'www PC', 'www Mobile'], horizontal=True, index =0)
 
-col1, col2, col3 = st.columns([1,1,2])
+col1, col2= st.columns([1,1])
 
 with col1:
     show_wydawca = st.checkbox("Pokaż wydawców", value=False)
@@ -58,8 +62,6 @@ else:
     show_wspolczytelnictwo = False
 
 
-with col3:
-    wyszukiwarka = st.text_input("Wyszukaj markę prasową:",  "", key="placeholder")
 
 
 wyniki = pd.DataFrame()
@@ -211,6 +213,45 @@ from openpyxl.styles import NamedStyle
 from openpyxl.styles import Font
 
 
+
+def make_clickable(tytul):
+    link = f"https://www.pbc.pl/badany-tytul/{tytul.lower().replace(' ', '-').replace('ó', 'o').replace('ś', 's').replace('ć', 'c').replace('ł', 'l').replace('ł', 'l').replace('ń', 'n').replace('ó', 'o').replace('ż', 'z')}/"
+    return f'<a target="_blank" href="{link}">{tytul}</a>'
+
+
+wyniki_sformatowane['Marka prasowa'] = wyniki_sformatowane['Marka prasowa'].apply(make_clickable)
+
+html_table = wyniki_sformatowane_styled.to_html()
+
+
+html_table = f"<div style='margin: auto;'>{html_table}</div>"
+
+# Wyświetl tabelę
+st.markdown(html_table, unsafe_allow_html=True)
+
+
+tekst = 'Badane marki:'
+for pismo in wyniki.index.unique():
+    try:
+        tekst = f'{tekst} {pismo} i {tematyka_legenda_dict[pismo]},'
+    except:
+        pass
+
+st.markdown(f"""<div style="font-size:12px">Statystyki: Zasięg CCS i Estymacja na populację, Populacja w wybranej grupie celowej =  {suma}</div>""", unsafe_allow_html=True)
+
+
+
+st.markdown("""<div style="font-size:12px">Fale: 1-9/2023</div>""", unsafe_allow_html=True)
+
+
+
+
+st.markdown("""<div style="font-size:12px">Dane CCS: Druk, E-wydania, Współczytelnictwo –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius</div>""", unsafe_allow_html=True)
+            
+st.markdown(f"""<div style="font-size:12px">{tekst}</div>""", unsafe_allow_html=True)
+
+st.markdown("""<div style="font-size:12px">Definicje: www.pbc.pl/wskazniki/</div>""", unsafe_allow_html=True)
+
 if st.button("Zapisz raport do pliku"):
     default_file_name = f"Total_reach012024.xlsx"
     wyniki_sformatowane_df = wyniki_sformatowane_styled.data
@@ -258,41 +299,3 @@ if st.button("Zapisz raport do pliku"):
     st.success(f"Dane zostały zapisane w pliku: {default_file_name}")
 
 # Przekształć stylizowaną ramkę danych do formatu HTML
-
-def make_clickable(tytul):
-    link = f"https://www.pbc.pl/badany-tytul/{tytul.lower().replace(' ', '-').replace('ó', 'o').replace('ś', 's').replace('ć', 'c').replace('ł', 'l').replace('ł', 'l').replace('ń', 'n').replace('ó', 'o').replace('ż', 'z')}/"
-    return f'<a target="_blank" href="{link}">{tytul}</a>'
-
-
-wyniki_sformatowane['Marka prasowa'] = wyniki_sformatowane['Marka prasowa'].apply(make_clickable)
-
-html_table = wyniki_sformatowane_styled.to_html()
-
-
-html_table = f"<div style='margin: auto;'>{html_table}</div>"
-
-# Wyświetl tabelę
-st.markdown(html_table, unsafe_allow_html=True)
-
-
-tekst = 'Badane marki:'
-for pismo in wyniki.index.unique():
-    try:
-        tekst = f'{tekst} {pismo} i {tematyka_legenda_dict[pismo]},'
-    except:
-        pass
-
-st.markdown(f"""<div style="font-size:12px">Statystyki: Zasięg CCS i Estymacja na populację, Populacja w wybranej grupie celowej =  {suma}</div>""", unsafe_allow_html=True)
-
-
-
-st.markdown("""<div style="font-size:12px">Fale: 1-9/2023</div>""", unsafe_allow_html=True)
-
-
-
-
-st.markdown("""<div style="font-size:12px">Dane CCS: Druk, E-wydania, Współczytelnictwo –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius</div>""", unsafe_allow_html=True)
-            
-st.markdown(f"""<div style="font-size:12px">{tekst}</div>""", unsafe_allow_html=True)
-
-st.markdown("""<div style="font-size:12px">Definicje: www.pbc.pl/wskazniki/</div>""", unsafe_allow_html=True)
