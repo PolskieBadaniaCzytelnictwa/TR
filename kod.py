@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import openpyxl
 
 primary_color = "#00AADB"
 
@@ -253,49 +254,11 @@ st.markdown(f"""<div style="font-size:12px">{tekst}</div>""", unsafe_allow_html=
 st.markdown("""<div style="font-size:12px">Definicje: www.pbc.pl/wskazniki/</div>""", unsafe_allow_html=True)
 
 if st.button("Zapisz raport do pliku"):
-    default_file_name = f"Total_reach012024.xlsx"
-    wyniki_sformatowane_df = wyniki_sformatowane_styled.data
-
-    # Utwórz nowy arkusz Excela
-    wb = Workbook()
-    ws = wb.active
-
-    # Dodaj nazwy kolumn z odpowiednim stylem
-    header_style = NamedStyle(name='header_style', font=Font(bold=True))
-    for col_idx, col_name in enumerate(wyniki_sformatowane_df.columns, start=1):
-        cell = ws.cell(row=1, column=col_idx, value=col_name)
-        cell.style = header_style
-
-    # Konwertuj DataFrame na arkusz Excela
-    for r_idx, row in enumerate(wyniki_sformatowane_df.itertuples(index=False), start=2):
-        for c_idx, value in enumerate(row, start=1):
-            # Usuń spacje z liczb przed zapisem do arkusza
-            if isinstance(value, str):
-                value = value.replace(" ", "")
-            cell = ws.cell(row=r_idx, column=c_idx, value=value)
-
-    # Dostosuj szerokość kolumn
-    for col in ws.columns:
-        max_length = 0
-        column = [cell for cell in col]
-        for cell in column:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(cell.value)
-            except:
-                pass
-        adjusted_width = (max_length + 2)
-        ws.column_dimensions[get_column_letter(col[0].column)].width = adjusted_width
-
-    # Dostosuj format kolumn od 2 do końca
-    num_format = NamedStyle(name='num_format', number_format='0')
-    for col_idx in range(2, ws.max_column + 1):
-        for row in ws.iter_rows(min_col=col_idx, max_col=col_idx):
-            for cell in row:
-                cell.style = num_format
-
-    # Zapisz arkusz Excela
-    wb.save(default_file_name)
-    st.success(f"Dane zostały zapisane w pliku: {default_file_name}")
+    plik_wejsciowy = "szablon.xlsx"
+    arkusz = openpyxl.load_workbook(plik_wejsciowy)
+    arkusz.active['A1'] = 2
+    plik_wyjsciowy = "Total_reach012024.xlsx"
+    arkusz.save(plik_wyjsciowy)
+    st.success(f"Plik został zapisany jako {plik_wyjsciowy}.")
 
 # Przekształć stylizowaną ramkę danych do formatu HTML
