@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import openpyxl
+from datetime import datetime
 
 primary_color = "#00AADB"
 
@@ -189,6 +190,8 @@ wyniki_sformatowane.index+=1
 if show_wydawca == False:
     del wyniki_sformatowane['Wydawca']
 
+wyniki_sformatowane_2 = wyniki_sformatowane.copy()
+
 if 'Total Reach 360°' in wyniki_sformatowane.columns :
     wyniki_sformatowane_styled = wyniki_sformatowane.style.set_table_styles([
     {'selector': 'table', 'props': [('text-align', 'center')]},
@@ -207,18 +210,9 @@ else:
     {'selector': 'th.col0, td.col0', 'props': [('text-align', 'left')]}  # Wyrównaj pierwszą kolumnę do lewej
 ])
 
-
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
-from openpyxl.styles import NamedStyle
-from openpyxl.styles import Font
-
-
-
 def make_clickable(tytul):
     link = f"https://www.pbc.pl/badany-tytul/{tytul.lower().replace(' ', '-').replace('ó', 'o').replace('ś', 's').replace('ć', 'c').replace('ł', 'l').replace('ł', 'l').replace('ń', 'n').replace('ó', 'o').replace('ż', 'z')}/"
     return f'<a target="_blank" href="{link}">{tytul}</a>'
-
 
 wyniki_sformatowane['Marka prasowa'] = wyniki_sformatowane['Marka prasowa'].apply(make_clickable)
 
@@ -240,11 +234,7 @@ for pismo in wyniki.index.unique():
 
 st.markdown(f"""<div style="font-size:12px">Statystyki: Zasięg CCS i Estymacja na populację, Populacja w wybranej grupie celowej =  {suma}</div>""", unsafe_allow_html=True)
 
-
-
 st.markdown("""<div style="font-size:12px">Fale: 1-9/2023</div>""", unsafe_allow_html=True)
-
-
 
 
 st.markdown("""<div style="font-size:12px">Dane CCS: Druk, E-wydania, Współczytelnictwo –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius</div>""", unsafe_allow_html=True)
@@ -255,7 +245,25 @@ st.markdown("""<div style="font-size:12px">Definicje: www.pbc.pl/wskazniki/</div
 
 plik_wejsciowy = "szablon.xlsx"
 arkusz = openpyxl.load_workbook(plik_wejsciowy)
-arkusz.active['A1'] = 2
+arkusz.active['A3'] = f'Data wykonania raportu: {datetime.now().strftime("%d.%m.%Y")}'
+arkusz.active['A85'] = tekst
+
+for i, nazwa_kolumny in enumerate(wyniki_sformatowane_2.columns, start=1):
+    arkusz.active.cell(row=5, column=i, value=nazwa_kolumny)
+
+for i, (kolumna, wartosc) in enumerate(wyniki_sformatowane_2.iloc[0].items(), start=1):
+    arkusz.active.cell(row=6, column=i, value=wartosc)
+
+for i, wiersz in enumerate(wyniki_sformatowane_2.iloc[1:].itertuples(), start=7):
+    for j, wartosc in enumerate(wiersz[1:], start=1):
+        arkusz.active.cell(row=i, column=j, value=wartosc)
+
+for col_index in range(8, wyniki_sformatowane_2.shape[1], -1):
+    arkusz.active.delete_cols(col_index)
+
+for row_index in range(80, wyniki_sformatowane_2.shape[0] + 5, -1):
+    arkusz.active.delete_rows(row_index)
+
 
 plik_wyjsciowy = "TR_012024.xlsx"
 arkusz.save(plik_wyjsciowy)
