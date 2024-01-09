@@ -89,7 +89,7 @@ if Magazyny == False:
 if selected_tematyki == []:
     selected_tematyki = ['Dzienniki ogólnopolskie', 'Dzienniki regionalne', 'Dodatki', 'Magazyny']
 
-col1, col2 = st.columns([2.25,2])
+col1, col2 = st.columns([2,2])
 
 if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75']: 
     with col1:
