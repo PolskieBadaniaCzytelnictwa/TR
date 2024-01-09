@@ -257,7 +257,7 @@ plik_wejsciowy = "szablon.xlsx"
 arkusz = openpyxl.load_workbook(plik_wejsciowy)
 arkusz.active['A1'] = 2
 
-plik_wyjsciowy = "zmodyfikowany_szablon.xlsx"
+plik_wyjsciowy = "TR_012024.xlsx"
 arkusz.save(plik_wyjsciowy)
 
 st.download_button(
