@@ -15,7 +15,6 @@ pd.set_option('display.float_format', '{:.0f}'.format)
 df = pd.read_excel('TBR360_g.xlsx')
 tematyka = pd.read_excel('kat.xlsx')
 
-tematyka_lista = tematyka['kat'].unique()
 wskaźniki_lista = ['Druk i E-wydania', 'www PC', 'www Mobile', 'www', 'Total Reach 360°']
 miesiące_lista = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -27,13 +26,69 @@ st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360�
 
 selected_miesiace = [341,342,343,344,345,346,347,348,349]
 
-Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], horizontal=True, index =0)
+col1, col2, col3, col4, col5, col6, col7 =  st.columns([2,2,1,1,1,1,1])
+with col1:
+    Kobiety = st.checkbox("Kobiety", value=True)
+with col2:
+    Mężczyźni = st.checkbox("Mężczyźni", value=True)
 
-Wiek = st.multiselect("Wybierz grupę wiekową:", ['15-24', '25-34', '35-44', '45-59', '60-75'], default=['15-24', '25-34', '35-44', '45-59', '60-75'])
+if Kobiety == True and Mężczyźni == False:
+    Płeć = 'Kobiety'
+    
+elif Kobiety == False and Mężczyźni == True:
+    Płeć = 'Mężczyźni'
 
-selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
+else:
+    Płeć = 'Wszyscy'
+
+with col3:
+    g1 = st.checkbox("15-24", value=True)
+with col4:
+    g2 = st.checkbox("25-34", value=True)
+with col5:
+    g3 = st.checkbox("35-44", value=True)
+with col6:
+    g4 = st.checkbox("45-59", value=True)
+with col7:
+    g5 = st.checkbox("60-75", value=True)
+
+Wiek = ['15-24', '25-34', '35-44', '45-59', '60-75']
+if g1 == False:
+    Wiek.remove('15-24')
+if g2 == False:
+    Wiek.remove('25-34')
+if g3 == False:
+    Wiek.remove('35-44')
+if g4 == False:
+    Wiek.remove('45-59')
+if g5 == False:
+    Wiek.remove('60-75')
+if Wiek==[]:
+    Wiek = ['15-24', '25-34', '35-44', '45-59', '60-75']
+
+
+col1, col2, col3, col4 =   st.columns([2,2,2,2])
+with col1:
+    Dzienniki_ogólnopolskie = st.checkbox("Dzienniki ogólnopolskie", value=True)
+with col2:
+    Dzienniki_regionalne = st.checkbox("Dzienniki_regionalne", value=True)
+with col3:
+    Dodatki = st.checkbox("Dodatki", value=True)
+with col4:
+    Magazyny = st.checkbox("Magazyny", value=True)
+
+selected_tematyki = ['Dzienniki ogólnopolskie', 'Dzienniki regionalne', 'Dodatki', 'Magazyny']
+if Dzienniki_ogólnopolskie == False:
+    selected_tematyki.remove('Dzienniki ogólnopolskie')
+if Dzienniki_regionalne == False:
+    selected_tematyki.remove('Dzienniki regionalne')
+if Dodatki == False:
+    selected_tematyki.remove('Dodatki')
+if Magazyny == False:
+    selected_tematyki.remove('Magazyny')
 if selected_tematyki == []:
-    selected_tematyki = tematyka_lista
+    selected_tematyki = ['Dzienniki ogólnopolskie', 'Dzienniki regionalne', 'Dodatki', 'Magazyny']
+
 
 if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75']: 
     estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
@@ -46,12 +101,18 @@ if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '2
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
                                                     'Druk i E-wydania', 'www', 'www PC', 'www Mobile'], horizontal=True, index =0)
 
+col1, col2 = st.columns([1,2])
+
+with col1:
+    show_wydawca = st.checkbox("Pokaż wydawców", value=False)
+
 if www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)' or www_option == 'Total Reach 360° (Druk i E-Wydania, www)': 
-    show_wspolczytelnictwo = st.checkbox("Pokaż współczytelnictwo", value=False)
+    with col2:
+        show_wspolczytelnictwo = st.checkbox("Pokaż współczytelnictwo", value=False)
 else:
     show_wspolczytelnictwo = False
 
-show_wydawca = st.checkbox("Pokaż wydawców", value=False)
+
 
 wyszukiwarka = st.text_input("Wyszukaj markę prasową:",  "", key="placeholder")
 
@@ -199,11 +260,64 @@ else:
 ])
 
 
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import NamedStyle
+from openpyxl.styles import Font
+
+
+if st.button("Zapisz raport do pliku"):
+    default_file_name = f"Total_reach012024.xlsx"
+    wyniki_sformatowane_df = wyniki_sformatowane_styled.data
+
+    # Utwórz nowy arkusz Excela
+    wb = Workbook()
+    ws = wb.active
+
+    # Dodaj nazwy kolumn z odpowiednim stylem
+    header_style = NamedStyle(name='header_style', font=Font(bold=True))
+    for col_idx, col_name in enumerate(wyniki_sformatowane_df.columns, start=1):
+        cell = ws.cell(row=1, column=col_idx, value=col_name)
+        cell.style = header_style
+
+    # Konwertuj DataFrame na arkusz Excela
+    for r_idx, row in enumerate(wyniki_sformatowane_df.itertuples(index=False), start=2):
+        for c_idx, value in enumerate(row, start=1):
+            # Usuń spacje z liczb przed zapisem do arkusza
+            if isinstance(value, str):
+                value = value.replace(" ", "")
+            cell = ws.cell(row=r_idx, column=c_idx, value=value)
+
+    # Dostosuj szerokość kolumn
+    for col in ws.columns:
+        max_length = 0
+        column = [cell for cell in col]
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[get_column_letter(col[0].column)].width = adjusted_width
+
+    # Dostosuj format kolumn od 2 do końca
+    num_format = NamedStyle(name='num_format', number_format='0')
+    for col_idx in range(2, ws.max_column + 1):
+        for row in ws.iter_rows(min_col=col_idx, max_col=col_idx):
+            for cell in row:
+                cell.style = num_format
+
+    # Zapisz arkusz Excela
+    wb.save(default_file_name)
+    st.success(f"Dane zostały zapisane w pliku: {default_file_name}")
+
 # Przekształć stylizowaną ramkę danych do formatu HTML
 
 def make_clickable(tytul):
     link = f"https://www.pbc.pl/badany-tytul/{tytul.lower().replace(' ', '-').replace('ó', 'o').replace('ś', 's').replace('ć', 'c').replace('ł', 'l').replace('ł', 'l').replace('ń', 'n').replace('ó', 'o').replace('ż', 'z')}/"
     return f'<a target="_blank" href="{link}">{tytul}</a>'
+
 
 wyniki_sformatowane['Marka prasowa'] = wyniki_sformatowane['Marka prasowa'].apply(make_clickable)
 
