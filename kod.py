@@ -31,7 +31,7 @@ Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], hor
 
 Wiek = st.multiselect("Wybierz grupę wiekową:", ['15-24', '25-34', '35-44', '45-59', '60-75'], default=['15-24', '25-34', '35-44', '45-59', '60-75'])
 
-col1, col2 = st.columns([1.8,1])
+col1, col2 = st.columns([2,1])
 with col1:
     selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
 with col2:
@@ -50,7 +50,7 @@ if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '2
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
                                                     'Druk i E-wydania', 'www', 'www PC', 'www Mobile'], horizontal=True, index =0)
 
-col1, col2= st.columns([1,1])
+col1, col2= st.columns([1,1.2])
 
 with col1:
     show_wydawca = st.checkbox("Pokaż wydawców", value=False)
