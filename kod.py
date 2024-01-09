@@ -15,6 +15,7 @@ pd.set_option('display.float_format', '{:.0f}'.format)
 df = pd.read_excel('TBR360_g.xlsx')
 tematyka = pd.read_excel('kat.xlsx')
 
+tematyka_lista = tematyka['kat'].unique()
 wskaźniki_lista = ['Druk i E-wydania', 'www PC', 'www Mobile', 'www', 'Total Reach 360°']
 miesiące_lista = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -26,77 +27,18 @@ st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360�
 
 selected_miesiace = [341,342,343,344,345,346,347,348,349]
 
-col1, col2, col3, col4, col5, col6, col7 =  st.columns([2,2,1,1,1,1,1])
-with col1:
-    Kobiety = st.checkbox("Kobiety", value=True)
-with col2:
-    Mężczyźni = st.checkbox("Mężczyźni", value=True)
+Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], horizontal=True, index =0)
 
-if Kobiety == True and Mężczyźni == False:
-    Płeć = 'Kobiety'
-    
-elif Kobiety == False and Mężczyźni == True:
-    Płeć = 'Mężczyźni'
+Wiek = st.multiselect("Wybierz grupę wiekową:", ['15-24', '25-34', '35-44', '45-59', '60-75'], default=['15-24', '25-34', '35-44', '45-59', '60-75'])
 
-else:
-    Płeć = 'Wszyscy'
-
-with col3:
-    g1 = st.checkbox("15-24", value=True)
-with col4:
-    g2 = st.checkbox("25-34", value=True)
-with col5:
-    g3 = st.checkbox("35-44", value=True)
-with col6:
-    g4 = st.checkbox("45-59", value=True)
-with col7:
-    g5 = st.checkbox("60-75", value=True)
-
-Wiek = ['15-24', '25-34', '35-44', '45-59', '60-75']
-if g1 == False:
-    Wiek.remove('15-24')
-if g2 == False:
-    Wiek.remove('25-34')
-if g3 == False:
-    Wiek.remove('35-44')
-if g4 == False:
-    Wiek.remove('45-59')
-if g5 == False:
-    Wiek.remove('60-75')
-if Wiek==[]:
-    Wiek = ['15-24', '25-34', '35-44', '45-59', '60-75']
-
-
-col1, col2, col3, col4 =   st.columns([2,2,2,2])
-with col1:
-    Dzienniki_ogólnopolskie = st.checkbox("Dzienniki ogólnopolskie", value=True)
-with col2:
-    Dzienniki_regionalne = st.checkbox("Dzienniki_regionalne", value=True)
-with col3:
-    Dodatki = st.checkbox("Dodatki", value=True)
-with col4:
-    Magazyny = st.checkbox("Magazyny", value=True)
-
-selected_tematyki = ['Dzienniki ogólnopolskie', 'Dzienniki regionalne', 'Dodatki', 'Magazyny']
-if Dzienniki_ogólnopolskie == False:
-    selected_tematyki.remove('Dzienniki ogólnopolskie')
-if Dzienniki_regionalne == False:
-    selected_tematyki.remove('Dzienniki regionalne')
-if Dodatki == False:
-    selected_tematyki.remove('Dodatki')
-if Magazyny == False:
-    selected_tematyki.remove('Magazyny')
+selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
 if selected_tematyki == []:
-    selected_tematyki = ['Dzienniki ogólnopolskie', 'Dzienniki regionalne', 'Dodatki', 'Magazyny']
-
-col1, col2 = st.columns([2,2])
+    selected_tematyki = tematyka_lista
 
 if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75']: 
-    with col1:
-        estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
+    estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
 else:
-    with col1:
-        estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 0)
+    estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 0)
 
 if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '25-34', '35-44', '45-59', '60-75']:
     estymacja = 'Estymacja na populację'
@@ -104,7 +46,9 @@ if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '2
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
                                                     'Druk i E-wydania', 'www', 'www PC', 'www Mobile'], horizontal=True, index =0)
 
-with col2:
+col1, col2, col3 = st.columns([1,1,2])
+
+with col1:
     show_wydawca = st.checkbox("Pokaż wydawców", value=False)
 
 if www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)' or www_option == 'Total Reach 360° (Druk i E-Wydania, www)': 
@@ -114,8 +58,8 @@ else:
     show_wspolczytelnictwo = False
 
 
-
-wyszukiwarka = st.text_input("Wyszukaj markę prasową:",  "", key="placeholder")
+with col3:
+    wyszukiwarka = st.text_input("Wyszukaj markę prasową:",  "", key="placeholder")
 
 
 wyniki = pd.DataFrame()
