@@ -50,7 +50,7 @@ if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '2
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
                                                     'Druk i E-wydania', 'www', 'www PC', 'www Mobile'], horizontal=True, index =0)
 
-col1, col2= st.columns([1,2])
+col1, col2= st.columns([1,3])
 
 with col1:
     show_wydawca = st.checkbox("Pokaż wydawców", value=False)
