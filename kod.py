@@ -248,7 +248,11 @@ arkusz = openpyxl.load_workbook(plik_wejsciowy)
 arkusz.active['A3'] = f'Data wykonania raportu: {datetime.now().strftime("%d.%m.%Y")}'
 arkusz.active['A85'] = tekst
 
+wyniki_sformatowane_2 = wyniki_sformatowane_2.applymap(lambda x: int(x) if isinstance(x, (int, float)) else x)
+
+
 for i, nazwa_kolumny in enumerate(wyniki_sformatowane_2.columns, start=1):
+
     arkusz.active.cell(row=5, column=i, value=nazwa_kolumny)
 
 for i, (kolumna, wartosc) in enumerate(wyniki_sformatowane_2.iloc[0].items(), start=1):
@@ -264,6 +268,13 @@ for col_index in range(8, wyniki_sformatowane_2.shape[1], -1):
 for row_index in range(80, wyniki_sformatowane_2.shape[0] + 5, -1):
     arkusz.active.delete_rows(row_index)
 
+for wiersz in range(6, 81):
+    for kolumna in ['A', 'B', 'C', 'D', 'E', 'F', 'G']:
+        komorka = arkusz.active[f'{kolumna}{wiersz}']
+        try:
+            komorka.value = int(komorka.value.replace(' ', ''))
+        except:
+            pass
 
 plik_wyjsciowy = "TR_012024.xlsx"
 arkusz.save(plik_wyjsciowy)
