@@ -33,6 +33,11 @@ Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], hor
 
 Wiek = st.multiselect("Wybierz grupę wiekową:", ['15-24', '25-34', '35-44', '45-59', '60-75'], default=['15-24', '25-34', '35-44', '45-59', '60-75'])
 
+Grupa = st.radio("Wybierz grupę celową:", ['Wszyscy', 'Dochód gospodarstwa ponad 5 tys.', 'Dochód ponad 2 tys.',
+                                           'Mieszkańcy miast powyżej 50 tys.', 'Osoby z dziećmi w wieku 0-14'], horizontal=True, index =0)
+
+
+
 col1, col2 = st.columns([2.2,1])
 with col1:
     selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
@@ -41,12 +46,12 @@ with col2:
 if selected_tematyki == []:
     selected_tematyki = tematyka_lista
 
-if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75']: 
+if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75'] and Grupa == 'Wszyscy': 
     estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
 else:
     estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 0)
 
-if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '25-34', '35-44', '45-59', '60-75']:
+if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '25-34', '35-44', '45-59', '60-75'] and Grupa == 'Wszyscy':
     estymacja = 'Estymacja na populację'
 
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
@@ -84,6 +89,28 @@ for i in selected_tematyki:
                 df_g = df_g[df_g['W'].isin(Wiek_num)]
                
                 wyniki.loc[j, k] = df_g[(df_g['tytuł'] == j) & (df_g['WSKAŹNIK'] == k) & (df_g['WAVE'].between(selected_miesiace[0], selected_miesiace[-1]))]['WYNIK'].sum()
+                if Grupa == 'Dochód gospodarstwa ponad 5 tys.':
+                    if k == 'Druk i E-wydania':
+                        wyniki.loc[j, k] = wyniki.loc[j, k] * float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'w1_druk')]['WYNIK'])
+                    else:
+                        wyniki.loc[j, k] = wyniki.loc[j, k] * float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'w1_www')]['WYNIK']) 
+                if Grupa == 'Dochód ponad 2 tys.':
+                    if k == 'Druk i E-wydania':
+                        wyniki.loc[j, k] = wyniki.loc[j, k] * float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'w2_druk')]['WYNIK']) 
+                    else:
+                        wyniki.loc[j, k] = wyniki.loc[j, k] * float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'w2_www')]['WYNIK']) 
+                if Grupa == 'Mieszkańcy miast powyżej 50 tys.':
+                    if k == 'Druk i E-wydania':
+                        wyniki.loc[j, k] = wyniki.loc[j, k] * float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'w3_druk')]['WYNIK']) 
+                    else:
+                        wyniki.loc[j, k] = wyniki.loc[j, k] * float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'w3_www')]['WYNIK']) 
+                if Grupa == 'Osoby z dziećmi w wieku 0-14':
+                    if k == 'Druk i E-wydania':
+                        wyniki.loc[j, k] = wyniki.loc[j, k] * float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'w4_druk')]['WYNIK']) 
+                    else:
+                        wyniki.loc[j, k] = wyniki.loc[j, k] * float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'w4_www')]['WYNIK']) 
+
+                                            
                 wyniki_cal.loc[j, k] = df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == k) & (df['WAVE'].between(selected_miesiace[0], selected_miesiace[-1]))]['WYNIK'].sum()
             else:
                 wyniki.loc[j, k] = max(wyniki.loc[j, 'Druk i E-wydania'], (1 - float(df[(df['tytuł'] == j) & (df['WSKAŹNIK'] == 'współczytelnictwo')]['WYNIK'])) * wyniki.loc[j, 'Druk i E-wydania'] + wyniki.loc[j, 'www'])
@@ -132,6 +159,17 @@ if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 5 in Wiek_num:
     suma += 4205663
 if (Płeć == 'Mężczyźni' or Płeć == 'Wszyscy') and 5 in Wiek_num:
     suma += 3337109
+
+if Grupa == 'Dochód gospodarstwa ponad 5 tys.':
+    suma = suma * 0.42544612
+if Grupa == 'Dochód ponad 2 tys.':
+    suma = suma * 0.750720851
+if Grupa == 'Mieszkańcy miast powyżej 50 tys.':
+    suma = suma * 0.346943213
+if Grupa == 'Osoby z dziećmi w wieku 0-14':
+    suma = suma * 0.230303669
+
+
 
 if estymacja == 'Zasięg (%)' or  estymacja == 'Affinity index' :
     wyniki = wyniki / suma * 100
@@ -252,13 +290,9 @@ wyniki_sformatowane_2 = wyniki_sformatowane_2.applymap(lambda x: int(x) if isins
 
 
 for i, nazwa_kolumny in enumerate(wyniki_sformatowane_2.columns, start=1):
-
     arkusz.active.cell(row=5, column=i, value=nazwa_kolumny)
 
-for i, (kolumna, wartosc) in enumerate(wyniki_sformatowane_2.iloc[0].items(), start=1):
-    arkusz.active.cell(row=6, column=i, value=wartosc)
-
-for i, wiersz in enumerate(wyniki_sformatowane_2.iloc[1:].itertuples(), start=7):
+for i, wiersz in enumerate(wyniki_sformatowane_2.iloc[0:].itertuples(), start=6):
     for j, wartosc in enumerate(wiersz[1:], start=1):
         arkusz.active.cell(row=i, column=j, value=wartosc)
 
