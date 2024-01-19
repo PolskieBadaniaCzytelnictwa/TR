@@ -36,8 +36,6 @@ Wiek = st.multiselect("Wybierz grupę wiekową:", ['15-24', '25-34', '35-44', '4
 Grupa = st.radio("Wybierz grupę celową:", ['Wszyscy', 'Dochód gospodarstwa ponad 5 tys.', 'Dochód ponad 2 tys.',
                                            'Mieszkańcy miast powyżej 50 tys.', 'Osoby z dziećmi w wieku 0-14'], horizontal=True, index =0)
 
-
-
 col1, col2 = st.columns([2.2,1])
 with col1:
     selected_tematyki = st.multiselect("Określ grupy pism:", tematyka_lista, default=tematyka_lista)
@@ -46,10 +44,20 @@ with col2:
 if selected_tematyki == []:
     selected_tematyki = tematyka_lista
 
+if 'estymacja' not in locals():
+    estymacja = 'Estymacja na populację'
+
 if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75'] and Grupa == 'Wszyscy': 
-    estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
+    if estymacja == 'Zasięg (%)':
+        estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 1)
+    else:
+        estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
 else:
-    estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 0)
+    if estymacja == 'Zasięg (%)':
+        estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 1)
+    else:
+        estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 0)
+
 
 if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '25-34', '35-44', '45-59', '60-75'] and Grupa == 'Wszyscy':
     estymacja = 'Estymacja na populację'
@@ -67,8 +75,6 @@ if www_option == 'Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)' 
         show_wspolczytelnictwo = st.checkbox("Pokaż współczytelnictwo", value=False)
 else:
     show_wspolczytelnictwo = False
-
-
 
 
 wyniki = pd.DataFrame()
@@ -136,8 +142,6 @@ else:
     wyniki = wyniki.sort_values('Total Reach 360°', ascending=False)
 
 
-
-
 suma = 0 
 if (Płeć == 'Kobiety' or Płeć == 'Wszyscy') and 1 in Wiek_num:
     suma += 1812738
@@ -168,7 +172,6 @@ if Grupa == 'Mieszkańcy miast powyżej 50 tys.':
     suma = suma * 0.346943213
 if Grupa == 'Osoby z dziećmi w wieku 0-14':
     suma = suma * 0.230303669
-
 
 
 if estymacja == 'Zasięg (%)' or  estymacja == 'Affinity index' :
@@ -259,9 +262,7 @@ html_table = wyniki_sformatowane_styled.to_html()
 
 html_table = f"<div style='margin: auto;'>{html_table}</div>"
 
-# Wyświetl tabelę
 st.markdown(html_table, unsafe_allow_html=True)
-
 
 tekst = 'Badane marki:'
 for pismo in wyniki.index.unique():
@@ -288,7 +289,6 @@ arkusz.active['A85'] = tekst
 
 wyniki_sformatowane_2 = wyniki_sformatowane_2.applymap(lambda x: int(x) if isinstance(x, (int, float)) else x)
 
-
 for i, nazwa_kolumny in enumerate(wyniki_sformatowane_2.columns, start=1):
     arkusz.active.cell(row=5, column=i, value=nazwa_kolumny)
 
@@ -310,7 +310,7 @@ for wiersz in range(6, 81):
         except:
             pass
 
-plik_wyjsciowy = "TR_012024.xlsx"
+plik_wyjsciowy = f"TR_{datetime.now().strftime('%d.%m.%Y')}.xlsx"
 arkusz.save(plik_wyjsciowy)
 
 st.download_button(
