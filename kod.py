@@ -14,6 +14,7 @@ st.set_page_config(
 
 pd.set_option('display.float_format', '{:.0f}'.format)
 
+
 df = pd.read_excel('TBR360_g.xlsx')
 tematyka = pd.read_excel('kat.xlsx')
 
@@ -44,22 +45,25 @@ with col2:
 if selected_tematyki == []:
     selected_tematyki = tematyka_lista
 
-if 'estymacja' not in locals():
-    estymacja = 'Estymacja na populację'
-
-if Płeć == 'Wszyscy' and Wiek == ['15-24', '25-34', '35-44', '45-59', '60-75'] and Grupa == 'Wszyscy': 
-    if estymacja == 'Zasięg (%)':
-        estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 1)
-    else:
+if Płeć == 'Wszyscy' and set(Wiek)== {'15-24', '25-34', '35-44', '45-59', '60-75'} and Grupa == 'Wszyscy': 
+    try:
+        if z==1:
+            estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 1)
+    except:
         estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)'], horizontal=True, index = 0)
 else:
-    if estymacja == 'Zasięg (%)':
-        estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 1)
-    else:
+    try:
+        if z==1:
+            estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 1)
+    except:
         estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 0)
 
+if estymacja == 'Zasięg (%)':
+    z = 1
+else:
+    z = 0
 
-if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and Wiek== ['15-24', '25-34', '35-44', '45-59', '60-75'] and Grupa == 'Wszyscy':
+if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and set(Wiek)== {'15-24', '25-34', '35-44', '45-59', '60-75'} and Grupa == 'Wszyscy':
     estymacja = 'Estymacja na populację'
 
 www_option = st.radio("Określ zakres danych www:", ['Total Reach 360° (Druk i E-Wydania, www PC oraz www Mobile)', 'Total Reach 360° (Druk i E-Wydania, www)',
