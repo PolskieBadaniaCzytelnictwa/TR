@@ -59,9 +59,9 @@ else:
         estymacja = st.radio("Określ sposób prezentowania danych:", ['Estymacja na populację', 'Zasięg (%)', 'Affinity index'], horizontal=True, index = 0)
 
 if estymacja == 'Zasięg (%)':
-    z = 1
+    st.session_state["z"] = 1
 else:
-    z = 0
+    st.session_state["z"] = 0
 
 if estymacja == 'Affinity index' and Płeć == 'Wszyscy' and set(Wiek)== {'15-24', '25-34', '35-44', '45-59', '60-75'} and Grupa == 'Wszyscy':
     estymacja = 'Estymacja na populację'
