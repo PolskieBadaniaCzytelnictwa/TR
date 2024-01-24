@@ -28,7 +28,7 @@ wydawca_legenda_dict = dict(zip(tematyka['tytuł'], tematyka['wydawca']))
 
 st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360°</h1>", unsafe_allow_html=True)
 
-selected_miesiace = [341,342,343,344,345,346,347,348,349]
+selected_miesiace = [341,342,343,344,345,346,347,348,349,350,351,352]
 
 Płeć = st.radio("Wybierz płeć:", ['Wszyscy', 'Kobiety', 'Mężczyźni'], horizontal=True, index =0)
 
@@ -280,7 +280,8 @@ st.markdown(f"""<div style="font-size:12px">Statystyki: Zasięg CCS i Estymacja 
 st.markdown("""<div style="font-size:12px">Fale: 1-9/2023</div>""", unsafe_allow_html=True)
 
 
-st.markdown("""<div style="font-size:12px">Dane CCS: Druk, E-wydania, Współczytelnictwo –  Badanie PBC „Zanagażowanie w reklamę” , www, www PC, www mobile – PBI/Gemius</div>""", unsafe_allow_html=True)
+st.markdown("""<div style="font-size:12px">Dane CCS: Druk, E-wydania, Współczytelnictwo – Badanie PBC „Zanagażowanie w reklamę” ,
+www, www PC, www mobile – Realusers (RU) PBI/Gemius</div>""", unsafe_allow_html=True)
             
 st.markdown(f"""<div style="font-size:12px">{tekst}</div>""", unsafe_allow_html=True)
 
