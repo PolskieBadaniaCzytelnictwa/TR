@@ -177,6 +177,7 @@ if Grupa == 'Mieszkańcy miast powyżej 50 tys.':
 if Grupa == 'Osoby z dziećmi w wieku 0-14':
     suma = suma * 0.230303669
 
+suma = round(suma,0)
 
 if estymacja == 'Zasięg (%)' or  estymacja == 'Affinity index' :
     wyniki = wyniki / suma * 100
@@ -277,7 +278,7 @@ for pismo in wyniki.index.unique():
 
 st.markdown(f"""<div style="font-size:12px">Statystyki: Zasięg CCS i Estymacja na populację, Populacja w wybranej grupie celowej =  {suma}</div>""", unsafe_allow_html=True)
 
-st.markdown("""<div style="font-size:12px">Fale: 1-9/2023</div>""", unsafe_allow_html=True)
+st.markdown("""<div style="font-size:12px">Fale: 1-12/2023</div>""", unsafe_allow_html=True)
 
 
 st.markdown("""<div style="font-size:12px">Dane CCS: Druk, E-wydania, Współczytelnictwo – Badanie PBC „Zanagażowanie w reklamę” ,
