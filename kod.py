@@ -177,7 +177,7 @@ if Grupa == 'Mieszkańcy miast powyżej 50 tys.':
 if Grupa == 'Osoby z dziećmi w wieku 0-14':
     suma = suma * 0.230303669
 
-suma = round(suma,0)
+suma = int(round(suma,0))
 
 if estymacja == 'Zasięg (%)' or  estymacja == 'Affinity index' :
     wyniki = wyniki / suma * 100
