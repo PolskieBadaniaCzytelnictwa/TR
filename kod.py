@@ -26,7 +26,7 @@ strony = pd.read_excel('strony.xlsx')
 tematyka_legenda_dict = dict(zip(strony['Pismo'], strony['Strona']))
 wydawca_legenda_dict = dict(zip(tematyka['tytuł'], tematyka['wydawca']))
 
-st.markdown("<h1 style='margin-top: -80px; text-align: center;'>Total Reach 360°</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='margin-top: -70px; text-align: center;'>Total Reach 360°</h1>", unsafe_allow_html=True)
 
 selected_miesiace = [341,342,343,344,345,346,347,348,349,350,351,352]
 
