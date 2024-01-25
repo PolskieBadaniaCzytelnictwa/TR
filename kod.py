@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import openpyxl
 from datetime import datetime
+import extra_streamlit_components as stx
 
 primary_color = "#00AADB"
 
@@ -267,7 +268,25 @@ html_table = wyniki_sformatowane_styled.to_html()
 
 html_table = f"<div style='margin: auto;'>{html_table}</div>"
 
-st.markdown(html_table, unsafe_allow_html=True)
+styled_table = f"""
+<style>
+    table {{
+        width: 100%;
+        margin: auto;
+        overflow-x: auto;
+    }}
+    th, td {{
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+        white-space: nowrap;  /* Unikaj przerywania tekstu na wielu linijkach */
+    }}
+</style>
+{html_table}
+"""
+
+# Wyświetl sformatowaną tabelę
+st.markdown(styled_table, unsafe_allow_html=True)
 
 tekst = 'Badane marki:'
 for pismo in wyniki.index.unique():
